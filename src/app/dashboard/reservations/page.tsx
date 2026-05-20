@@ -12,8 +12,8 @@ type Booking = {
   client_name: string | null
   client_email: string | null
   notes: string | null
-  services: { name: string } | null
-  employees: { name: string } | null
+  services: { name: string }[] | null
+  employees: { name: string }[] | null
 }
 
 const STATUS_LABEL: Record<BookingStatus, string> = {
@@ -102,11 +102,11 @@ export default async function ReservationsPage() {
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600 pt-1">
                     <span>
                       <span className="text-gray-400">Servicio:</span>{' '}
-                      {booking.services?.name ?? '—'}
+                      {booking.services?.[0]?.name ?? '—'}
                     </span>
                     <span>
                       <span className="text-gray-400">Profesional:</span>{' '}
-                      {booking.employees?.name ?? 'Sin asignar'}
+                      {booking.employees?.[0]?.name ?? 'Sin asignar'}
                     </span>
                     <span>
                       <span className="text-gray-400">Fecha:</span>{' '}
