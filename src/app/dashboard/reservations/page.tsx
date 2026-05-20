@@ -89,11 +89,11 @@ export default async function ReservationsPage() {
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600 pt-1">
                     <span>
                       <span className="text-gray-400">Servicio:</span>{' '}
-                      {booking.services?.[0]?.name ?? '—'}
+                      {booking.services?.name ?? '—'}
                     </span>
                     <span>
                       <span className="text-gray-400">Profesional:</span>{' '}
-                      {booking.employees?.[0]?.name ?? 'Sin asignar'}
+                      {booking.employees?.name ?? 'Sin asignar'}
                     </span>
                     <span>
                       <span className="text-gray-400">Fecha:</span>{' '}
