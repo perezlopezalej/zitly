@@ -1,7 +1,7 @@
 # Zitly — Sistema de reservas para negocios de servicios
 
 ## Stack
-- Next.js 15, TypeScript strict mode, Tailwind CSS
+- Next.js 16, TypeScript strict mode, Tailwind CSS
 - Supabase (auth + base de datos PostgreSQL)
 - Desplegado en Vercel
 
