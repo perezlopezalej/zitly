@@ -1,6 +1,7 @@
 'use server'
 
 import { createSupabaseServerClient } from '@/lib/supabase'
+import { validateLength } from '@/lib/validation'
 import { revalidatePath } from 'next/cache'
 
 // ─── Create booking (public — no auth required) ──────────────────────────────
@@ -28,7 +29,7 @@ export async function createBookingAction(
   input: CreateBookingInput,
 ): Promise<CreateBookingResult> {
   // H3: server-side input validation (HTML constraints are bypassable)
-  if (!input.clientName.trim() || input.clientName.length > 200) {
+  if (!validateLength(input.clientName.trim(), 1, 200)) {
     return { error: 'Nombre no válido' }
   }
   if (!EMAIL_RE.test(input.clientEmail)) {

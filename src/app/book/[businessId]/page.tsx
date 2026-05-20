@@ -1,6 +1,7 @@
 import { createSupabaseServerClient } from '@/lib/supabase'
 import { notFound } from 'next/navigation'
 import BookingFlow from './BookingFlow'
+import type { Service, Employee } from '@/types'
 
 type Props = {
   params: Promise<{ businessId: string }>
@@ -35,14 +36,8 @@ export default async function BookPage({ params }: Props) {
   return (
     <BookingFlow
       business={business as { id: string; name: string; description: string | null }}
-      services={(services ?? []) as {
-        id: string
-        name: string
-        description: string | null
-        duration_minutes: number
-        price: string
-      }[]}
-      employees={(employees ?? []) as { id: string; name: string }[]}
+      services={(services ?? []) as Service[]}
+      employees={(employees ?? []) as Employee[]}
     />
   )
 }

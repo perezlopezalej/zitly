@@ -3,6 +3,7 @@
 import { useActionState } from 'react'
 import Link from 'next/link'
 import { registerAction, type AuthState } from '@/app/actions/auth'
+import { ErrorAlert } from '@/components/ErrorAlert'
 
 export default function RegisterPage() {
   const [state, action, pending] = useActionState<AuthState, FormData>(
@@ -24,11 +25,7 @@ export default function RegisterPage() {
         </div>
 
         <form action={action} className="space-y-5">
-          {state?.error && (
-            <div className="rounded-md bg-red-50 border border-red-200 p-4">
-              <p className="text-sm text-red-700">{state.error}</p>
-            </div>
-          )}
+          {state?.error && <ErrorAlert message={state.error} />}
 
           <div>
             <label

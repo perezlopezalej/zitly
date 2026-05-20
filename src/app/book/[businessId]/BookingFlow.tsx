@@ -3,19 +3,7 @@
 import { useState, useTransition } from 'react'
 import { createBookingAction } from '@/app/actions/booking'
 import type { CreatedBooking } from '@/app/actions/booking'
-
-type Service = {
-  id: string
-  name: string
-  description: string | null
-  duration_minutes: number
-  price: string
-}
-
-type Employee = {
-  id: string
-  name: string
-}
+import type { Service, Employee } from '@/types'
 
 type Business = {
   id: string
@@ -197,7 +185,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
                       </div>
                       <div className="text-right shrink-0">
                         <p className="font-semibold text-indigo-600">
-                          {Number(service.price).toFixed(2)} €
+                          {service.price.toFixed(2)} €
                         </p>
                         <p className="text-xs text-gray-400">
                           {service.duration_minutes} min

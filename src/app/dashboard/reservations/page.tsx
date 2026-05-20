@@ -1,20 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createSupabaseServerClient } from '@/lib/supabase'
 import { updateBookingStatusAction } from '@/app/actions/booking'
-
-type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed'
-
-type Booking = {
-  id: string
-  date: string
-  time: string
-  status: BookingStatus
-  client_name: string | null
-  client_email: string | null
-  notes: string | null
-  services: { name: string }[] | null
-  employees: { name: string }[] | null
-}
+import type { BookingStatus, Booking } from '@/types'
 
 const STATUS_LABEL: Record<BookingStatus, string> = {
   pending: 'Pendiente',
