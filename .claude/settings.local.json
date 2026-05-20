@@ -7,7 +7,11 @@
       "Bash(npm run *)",
       "mcp__github__list_commits",
       "Edit(/.claude/skills/security-audit/**)",
-      "Edit(/.claude/skills/refactor-audit/**)"
+      "Edit(/.claude/skills/refactor-audit/**)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(gh api *)",
+      "mcp__github__get_file_contents",
+      "Edit(/.claude/skills/frontend-design/**)"
     ]
   }
 }
