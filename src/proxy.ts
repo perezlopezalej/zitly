@@ -1,12 +1,16 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextRequest, NextResponse } from 'next/server'
 
+// M4: validated at module load — crashes early with a clear message if missing
+const SUPABASE_URL     = process.env.NEXT_PUBLIC_SUPABASE_URL     ?? ''
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ''
+
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY,
     {
       cookies: {
         getAll() {
@@ -27,8 +31,11 @@ export async function proxy(request: NextRequest) {
     },
   )
 
-  // Reads session from cookie — no network call, suitable for proxy.
-  // Secure verification (getUser) happens in each Server Component.
+  // L1: getSession() reads the JWT from the cookie without a network call,
+  // which is intentional here for performance. A forged cookie could bypass
+  // this layer, but every protected Server Component calls getUser() which
+  // validates the token against Supabase servers — that is the security layer.
+  // This proxy is only a UX redirect guard, not the auth enforcement boundary.
   const {
     data: { session },
   } = await supabase.auth.getSession()

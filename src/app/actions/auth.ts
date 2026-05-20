@@ -17,13 +17,22 @@ export async function registerAction(
     return { error: 'Todos los campos son obligatorios' }
   }
 
+  // M1: enforce password length server-side (HTML minLength is bypassable)
+  if (password.length < 8) {
+    return { error: 'La contraseña debe tener al menos 8 caracteres' }
+  }
+
+  if (businessName.trim().length < 2 || businessName.trim().length > 100) {
+    return { error: 'El nombre del negocio debe tener entre 2 y 100 caracteres' }
+  }
+
   const supabase = await createSupabaseServerClient()
 
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: { full_name: businessName },
+      data: { full_name: businessName.trim() },
     },
   })
 
@@ -31,7 +40,8 @@ export async function registerAction(
     if (error.message.includes('already registered')) {
       return { error: 'Este email ya está registrado' }
     }
-    return { error: error.message }
+    // H2: never expose raw Supabase error messages to the client
+    return { error: 'Error al crear la cuenta. Inténtalo de nuevo.' }
   }
 
   if (!data.user) {
@@ -51,11 +61,14 @@ export async function registerAction(
     .from('businesses')
     .insert({
       owner_id: data.user.id,
-      name: businessName,
+      name: businessName.trim(),
       category: 'general',
     })
 
   if (businessError) {
+    // M3: if business creation fails, sign out so the user is not left in a
+    // broken authenticated state without an associated business record.
+    await supabase.auth.signOut()
     return { error: 'Error al crear el negocio. Inténtalo de nuevo.' }
   }
 
@@ -84,7 +97,8 @@ export async function loginAction(
     ) {
       return { error: 'Email o contraseña incorrectos' }
     }
-    return { error: error.message }
+    // H2: never expose raw Supabase error messages to the client
+    return { error: 'Error al iniciar sesión. Inténtalo de nuevo.' }
   }
 
   redirect('/dashboard')

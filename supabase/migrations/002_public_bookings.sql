@@ -6,6 +6,11 @@
 -- ────────────────────────────────────────────────────────────
 -- 1. Abrir lectura pública (rol anon) para la página de reservas
 --    Antes: solo "authenticated". Ahora: cualquiera (true).
+--
+-- L2 NOTA DE SEGURIDAD: esta política expone a usuarios anónimos los campos
+-- públicos de businesses (incluidos phone, email, address si existen).
+-- Si estos campos contienen datos privados del dueño, considera añadir
+-- columnas separadas para el contacto público y restringir las privadas.
 -- ────────────────────────────────────────────────────────────
 DROP POLICY "businesses: public read" ON businesses;
 CREATE POLICY "businesses: public read"

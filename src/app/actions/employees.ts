@@ -22,11 +22,17 @@ async function getBusiness() {
 }
 
 export async function createEmployeeAction(formData: FormData) {
+  const name = (formData.get('name') as string)?.trim()
+
+  if (!name || name.length < 1 || name.length > 100) {
+    return
+  }
+
   const { supabase, businessId } = await getBusiness()
 
   await supabase.from('employees').insert({
     business_id: businessId,
-    name: formData.get('name') as string,
+    name,
   })
 
   revalidatePath('/dashboard/employees')
