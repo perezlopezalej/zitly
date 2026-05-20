@@ -36,26 +36,30 @@ function CalendarIcon({ className }: { className?: string }) {
 }
 
 const navItems = [
-  { label: 'Inicio', href: '/dashboard', Icon: HomeIcon, exact: true },
-  { label: 'Servicios', href: '/dashboard/services', Icon: ScissorsIcon, exact: false },
-  { label: 'Empleados', href: '/dashboard/employees', Icon: UsersIcon, exact: false },
-  { label: 'Reservas', href: '/dashboard/reservations', Icon: CalendarIcon, exact: false },
+  { label: 'Inicio',    href: '/dashboard',              Icon: HomeIcon,     exact: true  },
+  { label: 'Servicios', href: '/dashboard/services',     Icon: ScissorsIcon, exact: false },
+  { label: 'Empleados', href: '/dashboard/employees',    Icon: UsersIcon,    exact: false },
+  { label: 'Reservas',  href: '/dashboard/reservations', Icon: CalendarIcon, exact: false },
 ]
+
+function isActive(pathname: string, href: string, exact: boolean) {
+  return exact ? pathname === href : pathname === href || pathname.startsWith(href + '/')
+}
 
 export default function DashboardSidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="w-56 shrink-0 bg-white border-r border-gray-200 hidden lg:block">
-      <nav className="p-3 space-y-0.5">
-        {navItems.map(({ label, href, Icon, exact }) => {
-          const isActive = exact ? pathname === href : pathname === href || pathname.startsWith(href + '/')
-          return (
+    <>
+      {/* ── Desktop sidebar ──────────────────────────────────────────────── */}
+      <aside className="w-56 shrink-0 bg-white border-r border-gray-200 hidden md:block">
+        <nav className="p-3 space-y-0.5">
+          {navItems.map(({ label, href, Icon, exact }) => (
             <Link
               key={href}
               href={href}
               className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                isActive
+                isActive(pathname, href, exact)
                   ? 'bg-brand-green-subtle text-brand-green-dark'
                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
               }`}
@@ -63,9 +67,33 @@ export default function DashboardSidebar() {
               <Icon className="w-5 h-5 shrink-0" />
               {label}
             </Link>
-          )
-        })}
+          ))}
+        </nav>
+      </aside>
+
+      {/* ── Mobile bottom nav ────────────────────────────────────────────── */}
+      <nav className="fixed bottom-0 inset-x-0 z-50 md:hidden bg-white border-t border-brand-border">
+        <div className="flex items-stretch h-16">
+          {navItems.map(({ label, href, Icon, exact }) => {
+            const active = isActive(pathname, href, exact)
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={`relative flex-1 flex flex-col items-center justify-center gap-1 transition-colors ${
+                  active ? 'text-brand-green' : 'text-brand-muted hover:text-brand-ink'
+                }`}
+              >
+                <Icon className="w-6 h-6 shrink-0" />
+                <span className="text-[10px] font-medium leading-none">{label}</span>
+                {active && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-brand-green rounded-full" />
+                )}
+              </Link>
+            )
+          })}
+        </div>
       </nav>
-    </aside>
+    </>
   )
 }
