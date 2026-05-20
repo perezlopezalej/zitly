@@ -187,7 +187,7 @@ export default function ServicesClient({ services }: { services: Service[] }) {
                   required
                   defaultValue={editingService?.name ?? ''}
                   placeholder="Ej: Corte de cabello"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-brand-ink placeholder-brand-muted focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
                 />
               </div>
 
@@ -200,7 +200,7 @@ export default function ServicesClient({ services }: { services: Service[] }) {
                   rows={2}
                   defaultValue={editingService?.description ?? ''}
                   placeholder="Describe el servicio (opcional)"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green resize-none"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-brand-ink placeholder-brand-muted focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green resize-none"
                 />
               </div>
 
@@ -215,7 +215,7 @@ export default function ServicesClient({ services }: { services: Service[] }) {
                     required
                     min={1}
                     defaultValue={editingService?.duration_minutes ?? 30}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-brand-ink focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
                   />
                 </div>
 
@@ -231,7 +231,7 @@ export default function ServicesClient({ services }: { services: Service[] }) {
                     step={0.01}
                     defaultValue={editingService?.price ?? ''}
                     placeholder="0.00"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-brand-ink placeholder-brand-muted focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
                   />
                 </div>
               </div>

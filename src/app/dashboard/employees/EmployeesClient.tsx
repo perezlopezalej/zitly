@@ -1,15 +1,21 @@
 'use client'
 
-import { useRef, useTransition } from 'react'
-import { createEmployeeAction, deleteEmployeeAction } from '@/app/actions/employees'
+import { useRef, useState, useTransition } from 'react'
+import {
+  createEmployeeAction,
+  deleteEmployeeAction,
+  updateEmployeeAction,
+} from '@/app/actions/employees'
 import type { Employee } from '@/types'
 import { getInitials, avatarColor } from '@/lib/format'
-import { TrashIcon } from '@/components/icons'
-
+import { TrashIcon, PencilIcon } from '@/components/icons'
 
 export default function EmployeesClient({ employees }: { employees: Employee[] }) {
   const [isPending, startTransition] = useTransition()
   const formRef = useRef<HTMLFormElement>(null)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editingName, setEditingName] = useState('')
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
 
   const handleCreate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -22,11 +28,48 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
     })
   }
 
+  const startEdit = (employee: Employee) => {
+    setConfirmDeleteId(null)
+    setEditingId(employee.id)
+    setEditingName(employee.name)
+  }
+
+  const cancelEdit = () => {
+    setEditingId(null)
+    setEditingName('')
+  }
+
+  const handleSave = (id: string) => {
+    const name = editingName.trim()
+    if (!name) return
+    startTransition(async () => {
+      const formData = new FormData()
+      formData.append('id', id)
+      formData.append('name', name)
+      await updateEmployeeAction(formData)
+      setEditingId(null)
+      setEditingName('')
+    })
+  }
+
+  const handleEditKeyDown = (e: React.KeyboardEvent, id: string) => {
+    if (e.key === 'Enter') { e.preventDefault(); handleSave(id) }
+    if (e.key === 'Escape') cancelEdit()
+  }
+
+  const startConfirmDelete = (id: string) => {
+    setEditingId(null)
+    setConfirmDeleteId(id)
+  }
+
+  const cancelDelete = () => setConfirmDeleteId(null)
+
   const handleDelete = (id: string) => {
     startTransition(async () => {
       const formData = new FormData()
       formData.append('id', id)
       await deleteEmployeeAction(formData)
+      setConfirmDeleteId(null)
     })
   }
 
@@ -49,7 +92,7 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
               name="name"
               required
               placeholder="Nombre del empleado"
-              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
+              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm text-brand-ink placeholder-brand-muted focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
             />
             <button
               type="submit"
@@ -69,26 +112,108 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
           </div>
         ) : (
           <ul className="divide-y divide-gray-100">
-            {employees.map((employee) => (
-              <li key={employee.id} className="flex items-center justify-between px-5 py-3.5">
-                <div className="flex items-center gap-3">
-                  <span
-                    className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 ${avatarColor(employee.name)}`}
-                  >
-                    {getInitials(employee.name)}
-                  </span>
-                  <span className="text-sm font-medium text-gray-900">{employee.name}</span>
-                </div>
-                <button
-                  onClick={() => handleDelete(employee.id)}
-                  disabled={isPending}
-                  className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-40"
-                  title="Eliminar empleado"
-                >
-                  <TrashIcon />
-                </button>
-              </li>
-            ))}
+            {employees.map((employee) => {
+              const isEditing = editingId === employee.id
+              const isConfirmingDelete = confirmDeleteId === employee.id
+
+              if (isEditing) {
+                return (
+                  <li key={employee.id} className="flex items-center gap-3 px-5 py-3.5">
+                    <span
+                      className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 ${avatarColor(employee.name)}`}
+                    >
+                      {getInitials(editingName || employee.name)}
+                    </span>
+                    <input
+                      autoFocus
+                      value={editingName}
+                      onChange={(e) => setEditingName(e.target.value)}
+                      onKeyDown={(e) => handleEditKeyDown(e, employee.id)}
+                      className="flex-1 border border-brand-green rounded-lg px-3 py-1.5 text-sm text-brand-ink focus:outline-none focus:ring-1 focus:ring-brand-green"
+                    />
+                    <button
+                      onClick={() => handleSave(employee.id)}
+                      disabled={isPending || !editingName.trim()}
+                      className="text-sm font-medium text-brand-green hover:text-brand-green-dark disabled:opacity-40 shrink-0"
+                    >
+                      Guardar
+                    </button>
+                    <button
+                      onClick={cancelEdit}
+                      className="text-sm text-gray-400 hover:text-gray-600 shrink-0"
+                    >
+                      Cancelar
+                    </button>
+                  </li>
+                )
+              }
+
+              if (isConfirmingDelete) {
+                return (
+                  <li key={employee.id} className="px-5 py-3.5">
+                    <div className="flex items-center justify-between gap-4 flex-wrap">
+                      <div className="flex items-center gap-3">
+                        <span
+                          className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 ${avatarColor(employee.name)}`}
+                        >
+                          {getInitials(employee.name)}
+                        </span>
+                        <span className="text-sm text-gray-600">
+                          ¿Eliminar a{' '}
+                          <span className="font-medium text-gray-900">{employee.name}</span>?
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          onClick={cancelDelete}
+                          className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+                        >
+                          Cancelar
+                        </button>
+                        <button
+                          onClick={() => handleDelete(employee.id)}
+                          disabled={isPending}
+                          className="px-3 py-1.5 text-xs font-medium rounded-lg bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors disabled:opacity-40"
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                )
+              }
+
+              return (
+                <li key={employee.id} className="flex items-center justify-between px-5 py-3.5">
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 ${avatarColor(employee.name)}`}
+                    >
+                      {getInitials(employee.name)}
+                    </span>
+                    <span className="text-sm font-medium text-gray-900">{employee.name}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => startEdit(employee)}
+                      disabled={isPending}
+                      className="p-1.5 text-gray-400 hover:text-brand-green hover:bg-brand-green-subtle rounded-md transition-colors disabled:opacity-40"
+                      title="Editar empleado"
+                    >
+                      <PencilIcon />
+                    </button>
+                    <button
+                      onClick={() => startConfirmDelete(employee.id)}
+                      disabled={isPending}
+                      className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-40"
+                      title="Eliminar empleado"
+                    >
+                      <TrashIcon />
+                    </button>
+                  </div>
+                </li>
+              )
+            })}
           </ul>
         )}
       </div>

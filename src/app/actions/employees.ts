@@ -21,6 +21,25 @@ export async function createEmployeeAction(formData: FormData) {
   revalidatePath('/dashboard/employees')
 }
 
+export async function updateEmployeeAction(formData: FormData) {
+  const id = formData.get('id') as string
+  const name = (formData.get('name') as string)?.trim()
+
+  if (!name || !validateLength(name, 1, 100)) {
+    return
+  }
+
+  const { supabase, businessId } = await getBusiness()
+
+  await supabase
+    .from('employees')
+    .update({ name })
+    .eq('id', id)
+    .eq('business_id', businessId)
+
+  revalidatePath('/dashboard/employees')
+}
+
 export async function deleteEmployeeAction(formData: FormData) {
   const { supabase, businessId } = await getBusiness()
   const id = formData.get('id') as string

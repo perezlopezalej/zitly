@@ -5,8 +5,6 @@ import { validateLength } from '@/lib/validation'
 import { revalidatePath } from 'next/cache'
 import type { ActionResult } from '@/types'
 
-export type { ActionResult }
-
 function validateServiceFields(formData: FormData): { error: string } | {
   name: string
   description: string | null
@@ -91,13 +89,30 @@ export async function deleteServiceAction(id: string): Promise<ActionResult> {
     return { error: msg }
   }
 
+  // Block deletion if active bookings reference this service (FK constraint)
+  const { count } = await supabase
+    .from('bookings')
+    .select('*', { count: 'exact', head: true })
+    .eq('service_id', id)
+    .eq('business_id', businessId)
+    .neq('status', 'cancelled')
+
+  if ((count ?? 0) > 0) {
+    return {
+      error: `Este servicio tiene ${count} reserva${count === 1 ? '' : 's'} activa${count === 1 ? '' : 's'}. Cancélalas antes de eliminarlo.`,
+    }
+  }
+
   const { error } = await supabase
     .from('services')
     .delete()
     .eq('id', id)
     .eq('business_id', businessId)
 
-  if (error) return { error: 'Error al eliminar el servicio. Inténtalo de nuevo.' }
+  if (error) {
+    console.error('[deleteServiceAction]', error.code, error.message)
+    return { error: 'Error al eliminar el servicio. Inténtalo de nuevo.' }
+  }
 
   revalidatePath('/dashboard/services')
 }
