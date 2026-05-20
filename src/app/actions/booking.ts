@@ -38,9 +38,8 @@ export async function createBookingAction(
   if (!/^\d{4}-\d{2}-\d{2}$/.test(input.date)) {
     return { error: 'Fecha no válida' }
   }
-  const bookingDate = new Date(input.date + 'T00:00:00')
-  const today = new Date(new Date().toDateString())
-  if (isNaN(bookingDate.getTime()) || bookingDate < today) {
+  const todayISO = new Date().toISOString().split('T')[0]
+  if (isNaN(new Date(input.date).getTime()) || input.date < todayISO) {
     return { error: 'La fecha no puede ser en el pasado' }
   }
   if (!TIME_RE.test(input.time)) {

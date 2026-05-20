@@ -80,10 +80,12 @@ export default function BookingFlow({ business, services, employees }: Props) {
     if (!selectedService || !clientName.trim() || !clientEmail.trim()) return
     setError('')
 
+    const service = selectedService
     startTransition(async () => {
+      if (!service) return
       const result = await createBookingAction({
         businessId: business.id,
-        serviceId: selectedService.id,
+        serviceId: service.id,
         employeeId: selectedEmployee?.id ?? null,
         date: selectedDate,
         time: selectedTime,
