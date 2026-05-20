@@ -13,7 +13,7 @@ export function formatPrice(price: number): string {
 }
 
 const avatarColors = [
-  'bg-indigo-100 text-indigo-700',
+  'bg-brand-green-subtle text-brand-green-dark',
   'bg-purple-100 text-purple-700',
   'bg-pink-100 text-pink-700',
   'bg-blue-100 text-blue-700',

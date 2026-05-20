@@ -105,7 +105,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
   // ── Confirmed ─────────────────────────────────────────────────────────────
   if (step === 'confirmed' && booking) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-brand-cream flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
@@ -127,7 +127,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
           </h2>
           <p className="text-gray-500 mb-6">Te esperamos en {business.name}</p>
 
-          <div className="bg-gray-50 rounded-xl p-4 text-left space-y-3 mb-6">
+          <div className="bg-brand-cream rounded-xl p-4 text-left space-y-3 mb-6">
             <Row label="Servicio" value={selectedService?.name ?? ''} />
             {selectedEmployee && (
               <Row label="Profesional" value={selectedEmployee.name} />
@@ -146,7 +146,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
 
   // ── Booking flow ──────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
+    <div className="min-h-screen bg-brand-cream py-10 px-4">
       <div className="max-w-lg mx-auto">
         {/* Header */}
         <div className="mb-8 text-center">
@@ -172,7 +172,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
                   <button
                     key={service.id}
                     onClick={() => handleServiceSelect(service)}
-                    className="w-full bg-white rounded-xl border border-gray-200 p-4 text-left hover:border-indigo-400 hover:shadow-sm transition-all"
+                    className="w-full bg-white rounded-xl border border-gray-200 p-4 text-left hover:border-brand-green hover:shadow-sm transition-all"
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div>
@@ -186,7 +186,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
                         )}
                       </div>
                       <div className="text-right shrink-0">
-                        <p className="font-semibold text-indigo-600">
+                        <p className="font-semibold text-brand-green">
                           {service.price.toFixed(2)} €
                         </p>
                         <p className="text-xs text-gray-400">
@@ -210,7 +210,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
             <div className="space-y-3">
               <button
                 onClick={() => handleEmployeeSelect(null)}
-                className="w-full bg-white rounded-xl border border-gray-200 p-4 text-left hover:border-indigo-400 hover:shadow-sm transition-all"
+                className="w-full bg-white rounded-xl border border-gray-200 p-4 text-left hover:border-brand-green hover:shadow-sm transition-all"
               >
                 <p className="font-medium text-gray-900">Sin preferencia</p>
                 <p className="text-sm text-gray-500">
@@ -221,7 +221,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
                 <button
                   key={emp.id}
                   onClick={() => handleEmployeeSelect(emp)}
-                  className="w-full bg-white rounded-xl border border-gray-200 p-4 text-left hover:border-indigo-400 hover:shadow-sm transition-all"
+                  className="w-full bg-white rounded-xl border border-gray-200 p-4 text-left hover:border-brand-green hover:shadow-sm transition-all"
                 >
                   <p className="font-medium text-gray-900">{emp.name}</p>
                 </button>
@@ -250,7 +250,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
                     setSelectedDate(e.target.value)
                     setSelectedTime('')
                   }}
-                  className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                  className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-brand-ink focus:border-brand-green focus:ring-1 focus:ring-brand-green outline-none"
                 />
               </div>
 
@@ -267,8 +267,8 @@ export default function BookingFlow({ business, services, employees }: Props) {
                         onClick={() => setSelectedTime(slot)}
                         className={`py-2 text-sm rounded-lg border transition-colors ${
                           selectedTime === slot
-                            ? 'bg-indigo-600 text-white border-indigo-600'
-                            : 'bg-white text-gray-700 border-gray-200 hover:border-indigo-400'
+                            ? 'bg-brand-green text-white border-brand-green'
+                            : 'bg-white text-gray-700 border-gray-200 hover:border-brand-green'
                         }`}
                       >
                         {slot}
@@ -286,7 +286,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
               <button
                 onClick={() => setStep('details')}
                 disabled={!selectedDate || !selectedTime}
-                className="px-5 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="px-5 py-2 bg-brand-green text-white text-sm font-medium rounded-lg hover:bg-brand-green-dark disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 Siguiente →
               </button>
@@ -312,7 +312,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
                   onChange={(e) => setClientName(e.target.value)}
                   placeholder="Tu nombre"
                   autoComplete="name"
-                  className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                  className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-brand-ink placeholder-brand-muted focus:border-brand-green focus:ring-1 focus:ring-brand-green outline-none"
                 />
               </div>
               <div>
@@ -325,15 +325,15 @@ export default function BookingFlow({ business, services, employees }: Props) {
                   onChange={(e) => setClientEmail(e.target.value)}
                   placeholder="tu@email.com"
                   autoComplete="email"
-                  className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                  className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-brand-ink placeholder-brand-muted focus:border-brand-green focus:ring-1 focus:ring-brand-green outline-none"
                 />
               </div>
               {error && <p className="text-sm text-red-600">{error}</p>}
             </div>
 
             {/* Summary */}
-            <div className="mt-4 bg-indigo-50 rounded-xl border border-indigo-100 p-4 space-y-1.5">
-              <p className="text-xs font-semibold text-indigo-700 uppercase tracking-wide mb-2">
+            <div className="mt-4 bg-brand-green-subtle rounded-xl border border-brand-green-subtle p-4 space-y-1.5">
+              <p className="text-xs font-semibold text-brand-green-dark uppercase tracking-wide mb-2">
                 Resumen
               </p>
               <Row label="Servicio" value={selectedService?.name ?? ''} />
@@ -349,7 +349,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
               <button
                 onClick={handleConfirm}
                 disabled={!clientName.trim() || !clientEmail.trim() || isPending}
-                className="px-5 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="px-5 py-2 bg-brand-green text-white text-sm font-medium rounded-lg hover:bg-brand-green-dark disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 {isPending ? 'Reservando…' : 'Confirmar reserva'}
               </button>
@@ -377,7 +377,7 @@ function BackLink({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="text-sm text-indigo-600 hover:underline"
+      className="text-sm text-brand-green hover:underline"
     >
       ← Volver
     </button>

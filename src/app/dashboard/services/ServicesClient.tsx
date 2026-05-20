@@ -74,7 +74,7 @@ export default function ServicesClient({ services }: { services: Service[] }) {
         </div>
         <button
           onClick={openCreate}
-          className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+          className="flex items-center gap-1.5 bg-brand-green hover:bg-brand-green-dark text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
         >
           <PlusIcon />
           Añadir servicio
@@ -92,7 +92,7 @@ export default function ServicesClient({ services }: { services: Service[] }) {
           <p className="text-gray-500 text-sm">No tienes ningún servicio todavía.</p>
           <button
             onClick={openCreate}
-            className="mt-3 text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+            className="mt-3 text-sm text-brand-green hover:text-brand-green-dark font-medium"
           >
             Crea tu primer servicio
           </button>
@@ -116,7 +116,7 @@ export default function ServicesClient({ services }: { services: Service[] }) {
                 <div className="flex items-center gap-1 shrink-0">
                   <button
                     onClick={() => openEdit(service)}
-                    className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"
+                    className="p-1.5 text-gray-400 hover:text-brand-green hover:bg-brand-green-subtle rounded-md transition-colors"
                     title="Editar"
                   >
                     <PencilIcon />
@@ -187,7 +187,7 @@ export default function ServicesClient({ services }: { services: Service[] }) {
                   required
                   defaultValue={editingService?.name ?? ''}
                   placeholder="Ej: Corte de cabello"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
                 />
               </div>
 
@@ -200,7 +200,7 @@ export default function ServicesClient({ services }: { services: Service[] }) {
                   rows={2}
                   defaultValue={editingService?.description ?? ''}
                   placeholder="Describe el servicio (opcional)"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green resize-none"
                 />
               </div>
 
@@ -215,7 +215,7 @@ export default function ServicesClient({ services }: { services: Service[] }) {
                     required
                     min={1}
                     defaultValue={editingService?.duration_minutes ?? 30}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
                   />
                 </div>
 
@@ -231,7 +231,7 @@ export default function ServicesClient({ services }: { services: Service[] }) {
                     step={0.01}
                     defaultValue={editingService?.price ?? ''}
                     placeholder="0.00"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
                   />
                 </div>
               </div>
@@ -247,7 +247,7 @@ export default function ServicesClient({ services }: { services: Service[] }) {
                 <button
                   type="submit"
                   disabled={isPending}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50"
+                  className="flex-1 bg-brand-green hover:bg-brand-green-dark text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50"
                 >
                   {isPending ? 'Guardando…' : 'Guardar'}
                 </button>

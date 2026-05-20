@@ -26,11 +26,11 @@ export default async function DashboardLayout({
   const businessName = business?.name ?? 'Mi negocio'
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-brand-cream flex flex-col">
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10 shrink-0">
         <div className="flex items-center justify-between px-4 sm:px-6 h-14">
           <div className="flex items-center gap-3">
-            <span className="text-xl font-bold text-indigo-600">Zitly</span>
+            <span className="text-xl font-bold text-brand-green">Zitly</span>
             <span className="text-gray-300 hidden sm:block">|</span>
             <span className="text-gray-700 font-medium text-sm hidden sm:block truncate max-w-48">
               {businessName}
