@@ -1,9 +1,17 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import Link from 'next/link'
+import { Playfair_Display } from 'next/font/google'
 import { createBookingAction } from '@/app/actions/booking'
 import type { CreatedBooking } from '@/app/actions/booking'
 import type { Service, Employee } from '@/types'
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-playfair',
+  display: 'swap',
+})
 
 type Business = {
   id: string
@@ -40,6 +48,15 @@ function formatDate(dateStr: string): string {
   })
 }
 
+function stepNumber(step: Step, hasEmployees: boolean): number {
+  if (hasEmployees) {
+    const map: Record<Step, number> = { service: 1, employee: 2, datetime: 3, details: 4, confirmed: 4 }
+    return map[step]
+  }
+  const map: Record<Step, number> = { service: 1, employee: 1, datetime: 2, details: 3, confirmed: 3 }
+  return map[step]
+}
+
 type Props = {
   business: Business
   services: Service[]
@@ -48,6 +65,7 @@ type Props = {
 
 export default function BookingFlow({ business, services, employees }: Props) {
   const hasEmployees = employees.length > 0
+  const totalSteps = hasEmployees ? 4 : 3
 
   const [step, setStep] = useState<Step>('service')
   const [selectedService, setSelectedService] = useState<Service | null>(null)
@@ -65,6 +83,8 @@ export default function BookingFlow({ business, services, employees }: Props) {
   const timeSlots = selectedService
     ? generateTimeSlots(selectedService.duration_minutes)
     : []
+
+  const currentStep = stepNumber(step, hasEmployees)
 
   function handleServiceSelect(service: Service) {
     setSelectedService(service)
@@ -105,11 +125,12 @@ export default function BookingFlow({ business, services, employees }: Props) {
   // ── Confirmed ─────────────────────────────────────────────────────────────
   if (step === 'confirmed' && booking) {
     return (
-      <div className="min-h-screen bg-brand-cream flex items-center justify-center p-4">
+      <div className={`${playfair.variable} min-h-screen bg-brand-cream flex items-center justify-center p-4`}>
+        <style>{`.font-display { font-family: var(--font-playfair); }`}</style>
         <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 bg-brand-green-subtle rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
-              className="w-8 h-8 text-green-600"
+              className="w-8 h-8 text-brand-green"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -146,15 +167,26 @@ export default function BookingFlow({ business, services, employees }: Props) {
 
   // ── Booking flow ──────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-brand-cream py-10 px-4">
+    <div className={`${playfair.variable} min-h-screen bg-brand-cream py-10 px-4`}>
+      <style>{`.font-display { font-family: var(--font-playfair); }`}</style>
       <div className="max-w-lg mx-auto">
+
         {/* Header */}
-        <div className="mb-8 text-center">
+        <div className="mb-6 text-center">
+          <Link
+            href="/"
+            className="font-display inline-block text-base italic font-semibold text-brand-green mb-3"
+          >
+            Zitly
+          </Link>
           <h1 className="text-2xl font-bold text-gray-900">{business.name}</h1>
           {business.description && (
             <p className="mt-1 text-sm text-gray-500">{business.description}</p>
           )}
         </div>
+
+        {/* Progress indicator */}
+        <StepIndicator current={currentStep} total={totalSteps} />
 
         {/* ── Step 1: Service ── */}
         {step === 'service' && (
@@ -250,7 +282,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
                     setSelectedDate(e.target.value)
                     setSelectedTime('')
                   }}
-                  className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-brand-ink focus:border-brand-green focus:ring-1 focus:ring-brand-green outline-none"
+                  className="block w-full rounded-md border border-brand-border px-3 py-2 text-sm text-brand-ink focus:border-brand-green focus:ring-1 focus:ring-brand-green outline-none"
                 />
               </div>
 
@@ -259,7 +291,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Hora
                   </label>
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                     {timeSlots.map((slot) => (
                       <button
                         key={slot}
@@ -312,7 +344,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
                   onChange={(e) => setClientName(e.target.value)}
                   placeholder="Tu nombre"
                   autoComplete="name"
-                  className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-brand-ink placeholder-brand-muted focus:border-brand-green focus:ring-1 focus:ring-brand-green outline-none"
+                  className="block w-full rounded-md border border-brand-border px-3 py-2 text-sm text-brand-ink placeholder-brand-muted focus:border-brand-green focus:ring-1 focus:ring-brand-green outline-none"
                 />
               </div>
               <div>
@@ -325,7 +357,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
                   onChange={(e) => setClientEmail(e.target.value)}
                   placeholder="tu@email.com"
                   autoComplete="email"
-                  className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-brand-ink placeholder-brand-muted focus:border-brand-green focus:ring-1 focus:ring-brand-green outline-none"
+                  className="block w-full rounded-md border border-brand-border px-3 py-2 text-sm text-brand-ink placeholder-brand-muted focus:border-brand-green focus:ring-1 focus:ring-brand-green outline-none"
                 />
               </div>
               {error && <p className="text-sm text-red-600">{error}</p>}
@@ -362,6 +394,26 @@ export default function BookingFlow({ business, services, employees }: Props) {
 }
 
 // ── Small helpers ─────────────────────────────────────────────────────────────
+
+function StepIndicator({ current, total }: { current: number; total: number }) {
+  return (
+    <div className="mb-8">
+      <div className="flex gap-1 w-full">
+        {Array.from({ length: total }, (_, i) => i + 1).map((n) => (
+          <div
+            key={n}
+            className={`h-1 flex-1 rounded-full transition-colors duration-300 ${
+              n <= current ? 'bg-brand-green' : 'bg-gray-200'
+            }`}
+          />
+        ))}
+      </div>
+      <p className="text-xs text-brand-muted mt-1.5 text-right tabular-nums">
+        {current}/{total}
+      </p>
+    </div>
+  )
+}
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
