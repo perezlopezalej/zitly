@@ -48,7 +48,7 @@ export default async function ReservationsPage() {
     .order('date', { ascending: false })
     .order('time', { ascending: false })
 
-  const bookings = (rawBookings ?? []) as Booking[]
+  const bookings = (rawBookings ?? []) as unknown as Booking[]
 
   return (
     <div className="p-6 sm:p-8">
