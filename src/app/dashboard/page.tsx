@@ -97,10 +97,11 @@ export default async function DashboardPage() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold text-gray-700">
-            Próximas citas de hoy
+            Próximas reservas de hoy
           </h2>
           <Link
             href="/dashboard/reservations"
+            aria-label="Ver todas las reservas"
             className="text-xs text-brand-green hover:underline"
           >
             Ver todas →
@@ -109,7 +110,7 @@ export default async function DashboardPage() {
 
         {upcoming.length === 0 ? (
           <div className="bg-white rounded-xl border border-gray-200 p-6 text-sm text-brand-muted text-center">
-            No hay citas para hoy
+            No hay reservas para hoy
           </div>
         ) : (
           <div className="space-y-2">

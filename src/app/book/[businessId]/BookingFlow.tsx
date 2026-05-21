@@ -154,9 +154,16 @@ export default function BookingFlow({ business, services, employees }: Props) {
             <Row label="Hora" value={booking.time.slice(0, 5)} />
           </div>
 
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-400 mb-6">
             Estado: pendiente de confirmación · {clientEmail}
           </p>
+
+          <Link
+            href="/"
+            className="inline-block text-sm text-brand-green hover:text-brand-green-dark font-medium"
+          >
+            ← Volver al inicio
+          </Link>
         </div>
       </div>
     )
@@ -341,7 +348,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
                   onChange={(e) => setClientName(e.target.value)}
                   placeholder="Tu nombre"
                   autoComplete="name"
-                  className="block w-full rounded-md border border-brand-border px-3 py-2 text-sm text-brand-ink placeholder-brand-muted focus:border-brand-green focus:ring-1 focus:ring-brand-green outline-none"
+                  className="block w-full rounded-md border border-brand-border px-3 py-2 text-base text-brand-ink placeholder-brand-muted focus:border-brand-green focus:ring-1 focus:ring-brand-green outline-none"
                 />
               </div>
               <div>
@@ -354,7 +361,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
                   onChange={(e) => setClientEmail(e.target.value)}
                   placeholder="tu@email.com"
                   autoComplete="email"
-                  className="block w-full rounded-md border border-brand-border px-3 py-2 text-sm text-brand-ink placeholder-brand-muted focus:border-brand-green focus:ring-1 focus:ring-brand-green outline-none"
+                  className="block w-full rounded-md border border-brand-border px-3 py-2 text-base text-brand-ink placeholder-brand-muted focus:border-brand-green focus:ring-1 focus:ring-brand-green outline-none"
                 />
               </div>
               {error && <p className="text-sm text-red-600">{error}</p>}

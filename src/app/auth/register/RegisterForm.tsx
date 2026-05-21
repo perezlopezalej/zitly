@@ -29,7 +29,7 @@ export default function RegisterForm() {
           required
           autoComplete="organization"
           placeholder="Mi Negocio"
-          className="block w-full rounded-lg border border-brand-border bg-white px-3 py-2.5 text-sm text-brand-ink placeholder-brand-muted focus:border-brand-green focus:outline-none focus:ring-2 focus:ring-brand-green-subtle transition-colors"
+          className="block w-full rounded-lg border border-brand-border bg-white px-3 py-2.5 text-base text-brand-ink placeholder-brand-muted focus:border-brand-green focus:outline-none focus:ring-2 focus:ring-brand-green-subtle transition-colors"
         />
       </div>
 
@@ -47,7 +47,7 @@ export default function RegisterForm() {
           required
           autoComplete="email"
           placeholder="tu@email.com"
-          className="block w-full rounded-lg border border-brand-border bg-white px-3 py-2.5 text-sm text-brand-ink placeholder-brand-muted focus:border-brand-green focus:outline-none focus:ring-2 focus:ring-brand-green-subtle transition-colors"
+          className="block w-full rounded-lg border border-brand-border bg-white px-3 py-2.5 text-base text-brand-ink placeholder-brand-muted focus:border-brand-green focus:outline-none focus:ring-2 focus:ring-brand-green-subtle transition-colors"
         />
       </div>
 
@@ -66,7 +66,7 @@ export default function RegisterForm() {
           minLength={8}
           autoComplete="new-password"
           placeholder="Mínimo 8 caracteres, mayúscula y número"
-          className="block w-full rounded-lg border border-brand-border bg-white px-3 py-2.5 text-sm text-brand-ink placeholder-brand-muted focus:border-brand-green focus:outline-none focus:ring-2 focus:ring-brand-green-subtle transition-colors"
+          className="block w-full rounded-lg border border-brand-border bg-white px-3 py-2.5 text-base text-brand-ink placeholder-brand-muted focus:border-brand-green focus:outline-none focus:ring-2 focus:ring-brand-green-subtle transition-colors"
         />
       </div>
 

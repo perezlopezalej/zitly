@@ -104,7 +104,11 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-100">
           <form ref={formRef} onSubmit={handleCreate} className="flex gap-3">
+            <label htmlFor="new-employee-name" className="sr-only">
+              Nombre del empleado
+            </label>
             <input
+              id="new-employee-name"
               type="text"
               name="name"
               required
@@ -146,7 +150,7 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
                       value={editingName}
                       onChange={(e) => setEditingName(e.target.value)}
                       onKeyDown={(e) => handleEditKeyDown(e, employee.id)}
-                      className="flex-1 border border-brand-green rounded-lg px-3 py-1.5 text-sm text-brand-ink focus:outline-none focus:ring-1 focus:ring-brand-green"
+                      className="flex-1 border border-brand-green rounded-lg px-3 py-1.5 text-base text-brand-ink focus:outline-none focus:ring-1 focus:ring-brand-green"
                     />
                     <button
                       onClick={() => handleSave(employee.id)}
@@ -214,16 +218,16 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
                     <button
                       onClick={() => startEdit(employee)}
                       disabled={isPending}
+                      aria-label={`Editar a ${employee.name}`}
                       className="p-1.5 text-gray-400 hover:text-brand-green hover:bg-brand-green-subtle rounded-md transition-colors disabled:opacity-40"
-                      title="Editar empleado"
                     >
                       <PencilIcon />
                     </button>
                     <button
                       onClick={() => startConfirmDelete(employee.id)}
                       disabled={isPending}
+                      aria-label={`Eliminar a ${employee.name}`}
                       className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-40"
-                      title="Eliminar empleado"
                     >
                       <TrashIcon />
                     </button>

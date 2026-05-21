@@ -22,7 +22,7 @@ export default function LandingPage() {
       {/* ── Nav ────────────────────────────────────────────────────────────── */}
       <header className="sticky top-0 z-50 bg-[#F6F4EF]/90 backdrop-blur-sm border-b border-[#E0DDD6]">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <span className="font-display text-xl font-bold italic tracking-tight">Zitly</span>
+          <Link href="/" className="font-display text-xl font-bold italic tracking-tight">Zitly</Link>
           <MobileNav />
         </div>
       </header>
@@ -40,7 +40,7 @@ export default function LandingPage() {
               <br />disponible.
             </h1>
             <p className="anim-2 text-lg text-[#74706A] max-w-md mx-auto leading-relaxed mb-12">
-              Zitly es la plataforma más sencilla para gestionar citas en
+              Zitly es la plataforma más sencilla para gestionar reservas en
               negocios de servicios. Sin complicaciones, sin apps extra.
             </p>
             <div className="anim-3 flex flex-col sm:flex-row gap-3 justify-center">
@@ -57,7 +57,7 @@ export default function LandingPage() {
                 Iniciar sesión
               </Link>
             </div>
-            <p className="mt-7 text-xs text-[#A09C96]">
+            <p className="mt-7 text-xs text-brand-muted">
               Sin tarjeta de crédito · Configuración en 2 minutos
             </p>
           </div>
@@ -91,7 +91,7 @@ export default function LandingPage() {
               <FeatureRow
                 number="02"
                 title="Gestión de equipo"
-                description="Asigna servicios a cada profesional. Tus clientes eligen con quién quieren su cita y en qué horario les va mejor."
+                description="Asigna servicios a cada profesional. Tus clientes eligen con quién quieren su reserva y en qué horario les va mejor."
               />
               <FeatureRow
                 number="03"
@@ -110,7 +110,7 @@ export default function LandingPage() {
                 Tu sector
               </p>
               <h2 className="font-display text-4xl sm:text-5xl font-bold leading-tight">
-                Pensado para quien<br />trabaja con citas.
+                Pensado para quien<br />trabaja con reservas.
               </h2>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -174,7 +174,7 @@ export default function LandingPage() {
                   'Empleados ilimitados',
                   'Estadísticas avanzadas',
                 ]}
-                cta="Contactar"
+                cta="Registrarse"
                 href="/auth/register"
                 featured={false}
               />
@@ -197,7 +197,7 @@ export default function LandingPage() {
             >
               Crear mi cuenta gratis →
             </Link>
-            <p className="mt-6 text-sm text-[#4A4641]">
+            <p className="mt-6 text-sm text-[#A09C96]">
               Sin compromiso · Sin tarjeta de crédito
             </p>
           </div>
@@ -207,8 +207,8 @@ export default function LandingPage() {
       {/* ── Footer ─────────────────────────────────────────────────────────── */}
       <footer className="bg-[#16130E] border-t border-[#272420] py-8 px-6">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-          <span className="font-display text-base font-bold italic text-white">Zitly</span>
-          <p className="text-xs text-[#4A4641]">
+          <Link href="/" className="font-display text-base font-bold italic text-white">Zitly</Link>
+          <p className="text-xs text-[#A09C96]">
             © {new Date().getFullYear()} Zitly · Sistema de reservas para negocios de servicios en España
           </p>
         </div>
@@ -239,7 +239,7 @@ function FeatureRow({
 }) {
   return (
     <div className="py-12 grid grid-cols-1 sm:grid-cols-[72px_1fr_2fr] gap-5 items-start">
-      <p className="text-sm font-medium text-[#A09C96] tabular-nums pt-1">{number}</p>
+      <p className="text-sm font-medium text-brand-muted tabular-nums pt-1">{number}</p>
       <h3 className="font-display text-2xl font-bold text-[#16130E] leading-snug">{title}</h3>
       <p className="text-[#74706A] leading-relaxed max-w-lg">{description}</p>
     </div>
@@ -248,7 +248,7 @@ function FeatureRow({
 
 function BusinessType({ label, sublabel }: { label: string; sublabel: string }) {
   return (
-    <div className="bg-white border border-[#E0DDD6] rounded-xl p-5 text-center hover:border-[#2C5F3F] hover:shadow-sm transition-all cursor-default">
+    <div className="bg-white border border-[#E0DDD6] rounded-xl p-5 text-center">
       <p className="font-medium text-[#16130E] text-sm leading-snug">{label}</p>
       <p className="text-xs text-[#A09C96] mt-1 leading-snug">{sublabel}</p>
     </div>

@@ -17,6 +17,7 @@ export default function ServicesClient({ services }: { services: Service[] }) {
   const [editingService, setEditingService] = useState<Service | null>(null)
   const [modalError, setModalError] = useState<string | null>(null)
   const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
   const openCreate = () => {
@@ -53,8 +54,9 @@ export default function ServicesClient({ services }: { services: Service[] }) {
     })
   }
 
-  const handleDelete = (id: string) => {
+  const handleDeleteConfirm = (id: string) => {
     setDeleteError(null)
+    setConfirmDeleteId(null)
     startTransition(async () => {
       const result = await deleteServiceAction(id)
       if (result?.error) setDeleteError(result.error)
@@ -116,16 +118,16 @@ export default function ServicesClient({ services }: { services: Service[] }) {
                 <div className="flex items-center gap-1 shrink-0">
                   <button
                     onClick={() => openEdit(service)}
+                    aria-label={`Editar ${service.name}`}
                     className="p-1.5 text-gray-400 hover:text-brand-green hover:bg-brand-green-subtle rounded-md transition-colors"
-                    title="Editar"
                   >
                     <PencilIcon />
                   </button>
                   <button
-                    onClick={() => handleDelete(service.id)}
+                    onClick={() => setConfirmDeleteId(service.id)}
                     disabled={isPending}
+                    aria-label={`Eliminar ${service.name}`}
                     className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-40"
-                    title="Eliminar"
                   >
                     <TrashIcon />
                   </button>
@@ -146,6 +148,31 @@ export default function ServicesClient({ services }: { services: Service[] }) {
         </div>
       )}
 
+      {confirmDeleteId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setConfirmDeleteId(null)} />
+          <div className="relative bg-white rounded-xl shadow-xl w-full max-w-sm p-6 text-center">
+            <p className="font-semibold text-gray-900 mb-2">¿Eliminar servicio?</p>
+            <p className="text-sm text-gray-500 mb-6">Esta acción no se puede deshacer.</p>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => setConfirmDeleteId(null)}
+                className="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => handleDeleteConfirm(confirmDeleteId)}
+                disabled={isPending}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div
@@ -160,6 +187,7 @@ export default function ServicesClient({ services }: { services: Service[] }) {
               <button
                 type="button"
                 onClick={closeModal}
+                aria-label="Cerrar"
                 className="text-gray-400 hover:text-gray-600 transition-colors"
               >
                 <XIcon />
@@ -187,7 +215,7 @@ export default function ServicesClient({ services }: { services: Service[] }) {
                   required
                   defaultValue={editingService?.name ?? ''}
                   placeholder="Ej: Corte de cabello"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-brand-ink placeholder-brand-muted focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-base text-brand-ink placeholder-brand-muted focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
                 />
               </div>
 
@@ -200,7 +228,7 @@ export default function ServicesClient({ services }: { services: Service[] }) {
                   rows={2}
                   defaultValue={editingService?.description ?? ''}
                   placeholder="Describe el servicio (opcional)"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-brand-ink placeholder-brand-muted focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green resize-none"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-base text-brand-ink placeholder-brand-muted focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green resize-none"
                 />
               </div>
 
@@ -231,7 +259,7 @@ export default function ServicesClient({ services }: { services: Service[] }) {
                     step={0.01}
                     defaultValue={editingService?.price ?? ''}
                     placeholder="0.00"
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-brand-ink placeholder-brand-muted focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-base text-brand-ink placeholder-brand-muted focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
                   />
                 </div>
               </div>

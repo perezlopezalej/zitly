@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { isRedirectError } from 'next/dist/client/components/redirect-error'
 import { getBusiness } from '@/lib/actions'
-import { updateBookingStatusAction } from '@/app/actions/booking'
+import { ConfirmButton, CancelButton } from './ReservationActionButtons'
 import type { BookingStatus, Booking } from '@/types'
 
 const STATUS_LABEL: Record<BookingStatus, string> = {
@@ -220,27 +220,9 @@ export default async function ReservationsPage({ searchParams }: PageProps) {
                 {(booking.status === 'pending' || booking.status === 'confirmed') && (
                   <div className="flex gap-2 shrink-0">
                     {booking.status === 'pending' && (
-                      <form action={updateBookingStatusAction}>
-                        <input type="hidden" name="bookingId" value={booking.id} />
-                        <input type="hidden" name="status" value="confirmed" />
-                        <button
-                          type="submit"
-                          className="px-3 py-1.5 text-xs font-medium rounded-lg bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition-colors"
-                        >
-                          Confirmar
-                        </button>
-                      </form>
+                      <ConfirmButton bookingId={booking.id} />
                     )}
-                    <form action={updateBookingStatusAction}>
-                      <input type="hidden" name="bookingId" value={booking.id} />
-                      <input type="hidden" name="status" value="cancelled" />
-                      <button
-                        type="submit"
-                        className="px-3 py-1.5 text-xs font-medium rounded-lg bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors"
-                      >
-                        Cancelar
-                      </button>
-                    </form>
+                    <CancelButton bookingId={booking.id} />
                   </div>
                 )}
               </div>
@@ -264,7 +246,7 @@ function FilterPill({
   return (
     <Link
       href={href}
-      className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+      className={`px-3 py-2 rounded-full text-xs font-medium transition-colors ${
         active
           ? 'bg-brand-green text-white'
           : 'bg-gray-100 text-brand-muted hover:bg-gray-200'

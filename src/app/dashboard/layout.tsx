@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { getBusiness } from '@/lib/actions'
 import { logoutAction } from '@/app/actions/auth'
 import DashboardSidebar from '@/components/DashboardSidebar'
@@ -14,7 +15,7 @@ export default async function DashboardLayout({
       <header className="bg-white border-b border-gray-200 sticky top-0 z-10 shrink-0">
         <div className="flex items-center justify-between px-4 sm:px-6 h-14">
           <div className="flex items-center gap-3">
-            <span className="text-xl font-bold text-brand-green">Zitly</span>
+            <Link href="/dashboard" className="text-xl font-bold text-brand-green">Zitly</Link>
             <span className="text-gray-300 hidden sm:block">|</span>
             <span className="text-gray-700 font-medium text-sm hidden sm:block truncate max-w-48">
               {businessName}
