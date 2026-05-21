@@ -46,10 +46,6 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 
-  if (pathname.startsWith('/auth/') && session) {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
-  }
-
   return response
 }
 
