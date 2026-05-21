@@ -3,6 +3,7 @@
 import { getBusiness } from '@/lib/actions'
 import { validateLength } from '@/lib/validation'
 import { revalidatePath } from 'next/cache'
+import { isRedirectError } from 'next/dist/client/components/redirect-error'
 import type { ActionResult } from '@/types'
 
 function validateServiceFields(formData: FormData): { error: string } | {
@@ -40,6 +41,7 @@ export async function createServiceAction(formData: FormData): Promise<ActionRes
   try {
     ;({ supabase, businessId } = await getBusiness())
   } catch (e) {
+    if (isRedirectError(e)) throw e
     const msg = e instanceof Error ? e.message : 'Error al obtener el negocio'
     return { error: msg }
   }
@@ -65,6 +67,7 @@ export async function updateServiceAction(formData: FormData): Promise<ActionRes
   try {
     ;({ supabase, businessId } = await getBusiness())
   } catch (e) {
+    if (isRedirectError(e)) throw e
     const msg = e instanceof Error ? e.message : 'Error al obtener el negocio'
     return { error: msg }
   }
@@ -85,6 +88,7 @@ export async function deleteServiceAction(id: string): Promise<ActionResult> {
   try {
     ;({ supabase, businessId } = await getBusiness())
   } catch (e) {
+    if (isRedirectError(e)) throw e
     const msg = e instanceof Error ? e.message : 'Error al obtener el negocio'
     return { error: msg }
   }

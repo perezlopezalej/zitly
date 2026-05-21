@@ -3,52 +3,80 @@
 import { getBusiness } from '@/lib/actions'
 import { validateLength } from '@/lib/validation'
 import { revalidatePath } from 'next/cache'
+import { isRedirectError } from 'next/dist/client/components/redirect-error'
+import type { ActionResult } from '@/types'
 
-export async function createEmployeeAction(formData: FormData) {
+export async function createEmployeeAction(formData: FormData): Promise<ActionResult> {
   const name = (formData.get('name') as string)?.trim()
 
-  if (!name || !validateLength(name, 1, 100)) {
-    return
+  if (!name || !validateLength(name, 1, 100)) return
+
+  let supabase, businessId
+  try {
+    ;({ supabase, businessId } = await getBusiness())
+  } catch (e) {
+    if (isRedirectError(e)) throw e
+    const msg = e instanceof Error ? e.message : 'Error al obtener el negocio'
+    return { error: msg }
   }
 
-  const { supabase, businessId } = await getBusiness()
-
-  await supabase.from('employees').insert({
+  const { error } = await supabase.from('employees').insert({
     business_id: businessId,
     name,
   })
 
+  if (error) return { error: 'Error al crear el empleado. Inténtalo de nuevo.' }
+
   revalidatePath('/dashboard/employees')
 }
 
-export async function updateEmployeeAction(formData: FormData) {
-  const id = formData.get('id') as string
+export async function updateEmployeeAction(formData: FormData): Promise<ActionResult> {
+  const id = (formData.get('id') as string)?.trim()
   const name = (formData.get('name') as string)?.trim()
 
-  if (!name || !validateLength(name, 1, 100)) {
-    return
+  if (!id) return
+  if (!name || !validateLength(name, 1, 100)) return
+
+  let supabase, businessId
+  try {
+    ;({ supabase, businessId } = await getBusiness())
+  } catch (e) {
+    if (isRedirectError(e)) throw e
+    const msg = e instanceof Error ? e.message : 'Error al obtener el negocio'
+    return { error: msg }
   }
 
-  const { supabase, businessId } = await getBusiness()
-
-  await supabase
+  const { error } = await supabase
     .from('employees')
     .update({ name })
     .eq('id', id)
     .eq('business_id', businessId)
 
+  if (error) return { error: 'Error al actualizar el empleado. Inténtalo de nuevo.' }
+
   revalidatePath('/dashboard/employees')
 }
 
-export async function deleteEmployeeAction(formData: FormData) {
-  const { supabase, businessId } = await getBusiness()
-  const id = formData.get('id') as string
+export async function deleteEmployeeAction(formData: FormData): Promise<ActionResult> {
+  const id = (formData.get('id') as string)?.trim()
+  if (!id) return
 
-  await supabase
+  let supabase, businessId
+  try {
+    ;({ supabase, businessId } = await getBusiness())
+  } catch (e) {
+    if (isRedirectError(e)) throw e
+    const msg = e instanceof Error ? e.message : 'Error al obtener el negocio'
+    return { error: msg }
+  }
+
+  const { error } = await supabase
     .from('employees')
     .delete()
     .eq('id', id)
     .eq('business_id', businessId)
+
+  if (error) return { error: 'Error al eliminar el empleado. Inténtalo de nuevo.' }
 
   revalidatePath('/dashboard/employees')
 }

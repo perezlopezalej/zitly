@@ -22,7 +22,6 @@ export type Booking = {
   status: BookingStatus
   client_name: string | null
   client_email: string | null
-  notes: string | null
   services: { name: string } | null
   employees: { name: string } | null
 }

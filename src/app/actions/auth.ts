@@ -17,9 +17,15 @@ export async function registerAction(
     return { error: 'Todos los campos son obligatorios' }
   }
 
-  // M1: enforce password length server-side (HTML minLength is bypassable)
+  // M1: enforce password complexity server-side (HTML constraints are bypassable)
   if (password.length < 8) {
     return { error: 'La contraseña debe tener al menos 8 caracteres' }
+  }
+  if (!/[A-Z]/.test(password)) {
+    return { error: 'La contraseña debe contener al menos una letra mayúscula' }
+  }
+  if (!/[0-9]/.test(password)) {
+    return { error: 'La contraseña debe contener al menos un número' }
   }
 
   if (businessName.trim().length < 2 || businessName.trim().length > 100) {
@@ -37,6 +43,7 @@ export async function registerAction(
   })
 
   if (error) {
+    // Note: depends on Supabase error message string — verify if upgrading Supabase client
     if (error.message.includes('already registered')) {
       return { error: 'Este email ya está registrado' }
     }

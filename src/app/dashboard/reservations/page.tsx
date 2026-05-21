@@ -1,6 +1,6 @@
-import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { createSupabaseServerClient } from '@/lib/supabase'
+import { isRedirectError } from 'next/dist/client/components/redirect-error'
+import { getBusiness } from '@/lib/actions'
 import { updateBookingStatusAction } from '@/app/actions/booking'
 import type { BookingStatus, Booking } from '@/types'
 
@@ -73,20 +73,12 @@ export default async function ReservationsPage({ searchParams }: PageProps) {
     ? (rawDate as DateFilter)
     : ''
 
-  const supabase = await createSupabaseServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const businessResult = await getBusiness().catch((e: unknown) => {
+    if (isRedirectError(e)) throw e
+    return null
+  })
 
-  if (!user) redirect('/auth/login')
-
-  const { data: business } = await supabase
-    .from('businesses')
-    .select('id, name')
-    .eq('owner_id', user.id)
-    .single()
-
-  if (!business) {
+  if (!businessResult) {
     return (
       <div className="p-8 text-sm text-gray-500">
         No se encontró ningún negocio asociado a tu cuenta.
@@ -94,12 +86,14 @@ export default async function ReservationsPage({ searchParams }: PageProps) {
     )
   }
 
+  const { supabase, businessId, businessName } = businessResult
+
   let query = supabase
     .from('bookings')
     .select(
-      'id, date, time, status, client_name, client_email, notes, services(name), employees(name)',
+      'id, date, time, status, client_name, client_email, services(name), employees(name)',
     )
-    .eq('business_id', business.id)
+    .eq('business_id', businessId)
 
   if (validStatus) query = query.eq('status', validStatus)
 
@@ -118,7 +112,7 @@ export default async function ReservationsPage({ searchParams }: PageProps) {
     <div className="p-6 sm:p-8">
       <div className="mb-5">
         <h1 className="text-xl font-semibold text-gray-900">Reservas</h1>
-        <p className="text-sm text-gray-500 mt-0.5">{business.name}</p>
+        <p className="text-sm text-gray-500 mt-0.5">{businessName}</p>
       </div>
 
       {/* Filters */}

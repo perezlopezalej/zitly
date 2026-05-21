@@ -2,16 +2,12 @@
 
 import { useState, useTransition } from 'react'
 import Link from 'next/link'
-import { Playfair_Display } from 'next/font/google'
 import { createBookingAction } from '@/app/actions/booking'
 import type { CreatedBooking } from '@/app/actions/booking'
 import type { Service, Employee } from '@/types'
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  variable: '--font-playfair',
-  display: 'swap',
-})
+import { BOOKING_HOURS_START, BOOKING_HOURS_END, BOOKING_SLOT_INTERVAL } from '@/lib/booking'
+import { todayISO } from '@/lib/format'
+import { playfair } from '@/lib/fonts'
 
 type Business = {
   id: string
@@ -23,9 +19,9 @@ type Step = 'service' | 'employee' | 'datetime' | 'details' | 'confirmed'
 
 function generateTimeSlots(durationMinutes: number): string[] {
   const slots: string[] = []
-  const start = 9 * 60
-  const end = 18 * 60
-  for (let m = start; m + durationMinutes <= end; m += 30) {
+  const start = BOOKING_HOURS_START * 60
+  const end = BOOKING_HOURS_END * 60
+  for (let m = start; m + durationMinutes <= end; m += BOOKING_SLOT_INTERVAL) {
     const h = Math.floor(m / 60)
     const min = m % 60
     slots.push(
@@ -35,8 +31,10 @@ function generateTimeSlots(durationMinutes: number): string[] {
   return slots
 }
 
-function todayISO(): string {
-  return new Date().toISOString().split('T')[0]
+function maxDateISO(): string {
+  const d = new Date()
+  d.setFullYear(d.getFullYear() + 1)
+  return d.toISOString().split('T')[0]
 }
 
 function formatDate(dateStr: string): string {
@@ -126,8 +124,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
   if (step === 'confirmed' && booking) {
     return (
       <div className={`${playfair.variable} min-h-screen bg-brand-cream flex items-center justify-center p-4`}>
-        <style>{`.font-display { font-family: var(--font-playfair); }`}</style>
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
+          <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
           <div className="w-16 h-16 bg-brand-green-subtle rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
               className="w-8 h-8 text-brand-green"
@@ -168,7 +165,6 @@ export default function BookingFlow({ business, services, employees }: Props) {
   // ── Booking flow ──────────────────────────────────────────────────────────
   return (
     <div className={`${playfair.variable} min-h-screen bg-brand-cream py-10 px-4`}>
-      <style>{`.font-display { font-family: var(--font-playfair); }`}</style>
       <div className="max-w-lg mx-auto">
 
         {/* Header */}
@@ -277,6 +273,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
                 <input
                   type="date"
                   min={todayISO()}
+                  max={maxDateISO()}
                   value={selectedDate}
                   onChange={(e) => {
                     setSelectedDate(e.target.value)

@@ -10,10 +10,14 @@ export async function getBusiness() {
 
   const { data: business } = await supabase
     .from('businesses')
-    .select('id')
+    .select('id, name')
     .eq('owner_id', user.id)
     .single()
 
   if (!business) throw new Error('Negocio no encontrado')
-  return { supabase, businessId: business.id as string }
+  return {
+    supabase,
+    businessId: business.id as string,
+    businessName: business.name as string,
+  }
 }

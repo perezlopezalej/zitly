@@ -9,21 +9,28 @@ import {
 import type { Employee } from '@/types'
 import { getInitials, avatarColor } from '@/lib/format'
 import { TrashIcon, PencilIcon } from '@/components/icons'
+import { ErrorAlert } from '@/components/ErrorAlert'
 
 export default function EmployeesClient({ employees }: { employees: Employee[] }) {
-  const [isPending, startTransition] = useTransition()
+  const [isCreating, startCreate] = useTransition()
+  const [isMutating, startMutate] = useTransition()
   const formRef = useRef<HTMLFormElement>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingName, setEditingName] = useState('')
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
+
+  const isPending = isCreating || isMutating
 
   const handleCreate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setActionError(null)
     const formData = new FormData(e.currentTarget)
     const name = (formData.get('name') as string).trim()
     if (!name) return
-    startTransition(async () => {
-      await createEmployeeAction(formData)
+    startCreate(async () => {
+      const result = await createEmployeeAction(formData)
+      if (result?.error) { setActionError(result.error); return }
       formRef.current?.reset()
     })
   }
@@ -42,11 +49,13 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
   const handleSave = (id: string) => {
     const name = editingName.trim()
     if (!name) return
-    startTransition(async () => {
+    setActionError(null)
+    startMutate(async () => {
       const formData = new FormData()
       formData.append('id', id)
       formData.append('name', name)
-      await updateEmployeeAction(formData)
+      const result = await updateEmployeeAction(formData)
+      if (result?.error) { setActionError(result.error); return }
       setEditingId(null)
       setEditingName('')
     })
@@ -65,10 +74,12 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
   const cancelDelete = () => setConfirmDeleteId(null)
 
   const handleDelete = (id: string) => {
-    startTransition(async () => {
+    setActionError(null)
+    startMutate(async () => {
       const formData = new FormData()
       formData.append('id', id)
-      await deleteEmployeeAction(formData)
+      const result = await deleteEmployeeAction(formData)
+      if (result?.error) { setActionError(result.error); return }
       setConfirmDeleteId(null)
     })
   }
@@ -83,6 +94,12 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
             : `${employees.length} empleado${employees.length !== 1 ? 's' : ''}`}
         </p>
       </div>
+
+      {actionError && (
+        <div className="mb-4">
+          <ErrorAlert message={actionError} compact />
+        </div>
+      )}
 
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="px-5 py-4 border-b border-gray-100">

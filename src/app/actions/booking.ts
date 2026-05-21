@@ -1,8 +1,10 @@
 'use server'
 
 import { createSupabaseServerClient } from '@/lib/supabase'
+import { getBusiness } from '@/lib/actions'
 import { validateLength } from '@/lib/validation'
 import { revalidatePath } from 'next/cache'
+import { BOOKING_HOURS_START, BOOKING_HOURS_END, BOOKING_SLOT_INTERVAL } from '@/lib/booking'
 
 // ─── Create booking (public — no auth required) ──────────────────────────────
 
@@ -46,18 +48,47 @@ export async function createBookingAction(
     return { error: 'Hora no válida' }
   }
 
+  // Validate time is within accepted business hours (matches client-generated slots)
+  const [h, m] = input.time.split(':').map(Number)
+  const totalMinutes = h * 60 + m
+  if (totalMinutes < BOOKING_HOURS_START * 60 || totalMinutes >= BOOKING_HOURS_END * 60) {
+    const lastSlotH = Math.floor((BOOKING_HOURS_END * 60 - BOOKING_SLOT_INTERVAL) / 60)
+    const lastSlotM = (BOOKING_HOURS_END * 60 - BOOKING_SLOT_INTERVAL) % 60
+    const lastSlot = `${String(lastSlotH).padStart(2, '0')}:${String(lastSlotM).padStart(2, '0')}`
+    return { error: `La hora debe estar entre las 09:00 y las ${lastSlot}` }
+  }
+
+  // Reject dates more than one year in the future
+  const maxDate = new Date()
+  maxDate.setFullYear(maxDate.getFullYear() + 1)
+  if (input.date > maxDate.toISOString().split('T')[0]) {
+    return { error: 'La fecha no puede ser superior a un año desde hoy' }
+  }
+
   const supabase = await createSupabaseServerClient()
 
-  // M2: rate limit — max 5 bookings per email per hour
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
-  const { count } = await supabase
+
+  // M2a: max 5 bookings per email per hour
+  const { count: emailCount } = await supabase
     .from('bookings')
     .select('*', { count: 'exact', head: true })
     .eq('client_email', input.clientEmail)
     .gte('created_at', oneHourAgo)
 
-  if ((count ?? 0) >= 5) {
+  if ((emailCount ?? 0) >= 5) {
     return { error: 'Demasiadas reservas desde este email. Inténtalo más tarde.' }
+  }
+
+  // M2b: max 20 bookings per business per hour (prevents business-targeted spam)
+  const { count: businessCount } = await supabase
+    .from('bookings')
+    .select('*', { count: 'exact', head: true })
+    .eq('business_id', input.businessId)
+    .gte('created_at', oneHourAgo)
+
+  if ((businessCount ?? 0) >= 20) {
+    return { error: 'Este negocio ha recibido demasiadas reservas. Inténtalo más tarde.' }
   }
 
   // Verify service belongs to the business (prevents cross-business injection)
@@ -102,13 +133,13 @@ export async function createBookingAction(
   return { booking: data as CreatedBooking }
 }
 
-// ─── Update booking status (business owner only, enforced via RLS) ────────────
+// ─── Update booking status (business owner only) ─────────────────────────────
 
 const ALLOWED_STATUS_TRANSITIONS = ['confirmed', 'cancelled'] as const
 type AllowedStatus = (typeof ALLOWED_STATUS_TRANSITIONS)[number]
 
 export async function updateBookingStatusAction(formData: FormData) {
-  const bookingId = formData.get('bookingId') as string
+  const bookingId = (formData.get('bookingId') as string)?.trim()
   const rawStatus = formData.get('status') as string
 
   if (!bookingId || !rawStatus) return
@@ -117,9 +148,13 @@ export async function updateBookingStatusAction(formData: FormData) {
   if (!(ALLOWED_STATUS_TRANSITIONS as readonly string[]).includes(rawStatus)) return
   const status = rawStatus as AllowedStatus
 
-  const supabase = await createSupabaseServerClient()
+  const { supabase, businessId } = await getBusiness()
 
-  await supabase.from('bookings').update({ status }).eq('id', bookingId)
+  await supabase
+    .from('bookings')
+    .update({ status })
+    .eq('id', bookingId)
+    .eq('business_id', businessId)
 
   revalidatePath('/dashboard/reservations')
 }

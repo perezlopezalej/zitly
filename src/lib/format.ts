@@ -1,3 +1,7 @@
+export function todayISO(): string {
+  return new Date().toISOString().split('T')[0]
+}
+
 export function formatDuration(duration_minutes: number): string {
   if (duration_minutes < 60) return `${duration_minutes} min`
   const h = Math.floor(duration_minutes / 60)

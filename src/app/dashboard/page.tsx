@@ -1,10 +1,6 @@
-import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { createSupabaseServerClient } from '@/lib/supabase'
-
-function todayISO() {
-  return new Date().toISOString().split('T')[0]
-}
+import { getBusiness } from '@/lib/actions'
+import { todayISO } from '@/lib/format'
 
 function monthRange() {
   const now = new Date()
@@ -24,19 +20,7 @@ type UpcomingBooking = {
 }
 
 export default async function DashboardPage() {
-  const supabase = await createSupabaseServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) redirect('/auth/login')
-
-  const { data: business } = await supabase
-    .from('businesses')
-    .select('id, name')
-    .eq('owner_id', user.id)
-    .single()
-
-  if (!business) return null
+  const { supabase, businessId, businessName } = await getBusiness()
 
   const today = todayISO()
   const { start: monthStart, end: monthEnd } = monthRange()
@@ -50,25 +34,25 @@ export default async function DashboardPage() {
     supabase
       .from('bookings')
       .select('*', { count: 'exact', head: true })
-      .eq('business_id', business.id)
+      .eq('business_id', businessId)
       .eq('date', today)
       .neq('status', 'cancelled'),
     supabase
       .from('bookings')
       .select('*', { count: 'exact', head: true })
-      .eq('business_id', business.id)
+      .eq('business_id', businessId)
       .eq('status', 'pending'),
     supabase
       .from('bookings')
       .select('*', { count: 'exact', head: true })
-      .eq('business_id', business.id)
+      .eq('business_id', businessId)
       .gte('date', monthStart)
       .lte('date', monthEnd)
       .neq('status', 'cancelled'),
     supabase
       .from('bookings')
       .select('id, time, client_name, services(name)')
-      .eq('business_id', business.id)
+      .eq('business_id', businessId)
       .eq('date', today)
       .neq('status', 'cancelled')
       .order('time', { ascending: true })
@@ -82,7 +66,7 @@ export default async function DashboardPage() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-semibold text-brand-ink">
-          {business.name}
+          {businessName}
         </h1>
         <p className="mt-1 text-sm text-brand-muted">
           Aquí tienes el resumen de hoy

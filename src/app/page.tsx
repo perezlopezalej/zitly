@@ -1,19 +1,6 @@
 import Link from 'next/link'
-import { Playfair_Display, DM_Sans } from 'next/font/google'
 import MobileNav from './MobileNav'
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  variable: '--font-playfair',
-  display: 'swap',
-})
-
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  variable: '--font-dm-sans',
-  weight: ['300', '400', '500', '600'],
-  display: 'swap',
-})
+import { playfair, dmSans } from '@/lib/fonts'
 
 export default function LandingPage() {
   return (
@@ -22,7 +9,6 @@ export default function LandingPage() {
       style={{ fontFamily: 'var(--font-dm-sans)' }}
     >
       <style>{`
-        .font-display { font-family: var(--font-playfair); }
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(20px); }
           to   { opacity: 1; transform: translateY(0); }
