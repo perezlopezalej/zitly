@@ -1,8 +1,14 @@
 import Link from 'next/link'
 import MobileNav from './MobileNav'
 import { playfair, dmSans } from '@/lib/fonts'
+import { redirect } from 'next/navigation'
+import { createSupabaseServerClient } from '@/lib/supabase'
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const supabase = await createSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (user) redirect('/dashboard')
+
   return (
     <div
       className={`${playfair.variable} ${dmSans.variable} min-h-screen bg-[#F6F4EF] text-[#16130E]`}
@@ -23,7 +29,7 @@ export default function LandingPage() {
       <header className="sticky top-0 z-50 bg-[#F6F4EF]/90 backdrop-blur-sm border-b border-[#E0DDD6]">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="font-display text-xl font-bold italic tracking-tight">Zitly</Link>
-          <MobileNav />
+          <MobileNav loggedIn={false} />
         </div>
       </header>
 

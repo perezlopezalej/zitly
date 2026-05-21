@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
 
-export default function MobileNav() {
+export default function MobileNav({ loggedIn }: { loggedIn: boolean }) {
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -22,18 +22,29 @@ export default function MobileNav() {
     <>
       {/* Desktop nav */}
       <nav className="hidden sm:flex items-center gap-6">
-        <Link
-          href="/auth/login"
-          className="text-sm text-brand-muted hover:text-brand-ink transition-colors"
-        >
-          Iniciar sesión
-        </Link>
-        <Link
-          href="/auth/register"
-          className="text-sm font-medium px-4 py-2 bg-brand-ink text-white rounded-lg hover:bg-brand-green transition-colors"
-        >
-          Empieza gratis
-        </Link>
+        {loggedIn ? (
+          <Link
+            href="/dashboard"
+            className="text-sm font-medium px-4 py-2 bg-brand-green text-white rounded-lg hover:bg-brand-green-dark transition-colors"
+          >
+            Ir al dashboard
+          </Link>
+        ) : (
+          <>
+            <Link
+              href="/auth/login"
+              className="text-sm text-brand-muted hover:text-brand-ink transition-colors"
+            >
+              Iniciar sesión
+            </Link>
+            <Link
+              href="/auth/register"
+              className="text-sm font-medium px-4 py-2 bg-brand-ink text-white rounded-lg hover:bg-brand-green transition-colors"
+            >
+              Empieza gratis
+            </Link>
+          </>
+        )}
       </nav>
 
       {/* Mobile hamburger */}
@@ -65,21 +76,33 @@ export default function MobileNav() {
               : 'opacity-0 scale-95 pointer-events-none'
           }`}
         >
-          <Link
-            href="/auth/login"
-            onClick={() => setOpen(false)}
-            className="block px-5 py-3.5 text-sm text-brand-ink hover:bg-[#EDEAE3] transition-colors"
-          >
-            Iniciar sesión
-          </Link>
-          <div className="border-t border-brand-border" />
-          <Link
-            href="/auth/register"
-            onClick={() => setOpen(false)}
-            className="block px-5 py-3.5 text-sm font-medium text-brand-green hover:bg-[#EDEAE3] transition-colors"
-          >
-            Empieza gratis →
-          </Link>
+          {loggedIn ? (
+            <Link
+              href="/dashboard"
+              onClick={() => setOpen(false)}
+              className="block px-5 py-3.5 text-sm font-medium text-brand-green hover:bg-[#EDEAE3] transition-colors"
+            >
+              Ir al dashboard →
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/auth/login"
+                onClick={() => setOpen(false)}
+                className="block px-5 py-3.5 text-sm text-brand-ink hover:bg-[#EDEAE3] transition-colors"
+              >
+                Iniciar sesión
+              </Link>
+              <div className="border-t border-brand-border" />
+              <Link
+                href="/auth/register"
+                onClick={() => setOpen(false)}
+                className="block px-5 py-3.5 text-sm font-medium text-brand-green hover:bg-[#EDEAE3] transition-colors"
+              >
+                Empieza gratis →
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </>

@@ -114,5 +114,5 @@ export async function loginAction(
 export async function logoutAction() {
   const supabase = await createSupabaseServerClient()
   await supabase.auth.signOut()
-  redirect('/auth/login')
+  redirect('/')
 }
