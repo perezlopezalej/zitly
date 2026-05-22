@@ -80,6 +80,51 @@ Presenta los findings como tabla antes de aplicar ningún cambio:
 
 ---
 
+### 8. Supply Chain Security & AI Tools
+
+> Basado en ataques reales de 2025-2026: paquetes npm maliciosos, extensiones de VS Code troyanizadas, MCP servers comprometidos e inyección de prompts en configs de proyecto.
+
+#### 8a. npm / Dependencias
+- [ ] `package-lock.json` existe y está commiteado en el repositorio.
+- [ ] CI/CD usa `npm ci` en lugar de `npm install` (reproduce el lockfile exacto).
+- [ ] Ningún `package.json` propio ni de dependencias directas tiene scripts `preinstall`/`postinstall` sospechosos — revisar con `npm ls --all` y auditar manualmente los que ejecuten shells, curl o node -e.
+- [ ] Las dependencias críticas usan versiones exactas (`"1.2.3"`) en lugar de rangos amplios (`^1.2.3`, `~1.2.3`).
+- [ ] `npm audit --audit-level moderate` no arroja vulnerabilidades sin resolver.
+- [ ] No existen paquetes con nombres que imiten a librerías populares con errores tipográficos (typosquatting): p. ej. `lodahs`, `expres`, `recat`.
+- [ ] `.npmrc` del proyecto incluye `save-exact=true` y considera `ignore-scripts=true` si no se necesitan postinstall legítimos.
+
+#### 8b. Extensiones de VS Code
+- [ ] `.vscode/extensions.json` solo lista extensiones de publishers verificados y conocidos (Microsoft, publishers con historial largo).
+- [ ] No hay extensiones instaladas recientemente en el workspace sin justificación documentada — revisar con `code --list-extensions`.
+- [ ] Nunca instalar extensiones de publishers sin historial de descargas, reviews o presencia pública verificable.
+
+#### 8c. GitHub Actions
+- [ ] Todas las actions de terceros referencian un hash de commit completo (`uses: actions/checkout@abc1234…`), nunca `@v1`, `@v2` ni `@latest`.
+- [ ] Ningún workflow tiene `permissions: write-all` ni `contents: write` sin necesidad explícita documentada.
+- [ ] Los secrets de CI/CD (`secrets.NPM_TOKEN`, `secrets.VERCEL_TOKEN`, etc.) no se imprimen en `echo` ni en `run:` steps — verificar los logs de runs recientes.
+
+#### 8d. MCP Servers
+- [ ] `.mcp.json` solo contiene servidores oficiales de Anthropic o de publishers con repositorio público y mantenimiento activo.
+- [ ] Los puertos que exponen servidores MCP locales no están abiertos en el firewall del sistema ni en reglas de red del cloud.
+- [ ] MCPs que no se usan activamente están desactivados o eliminados de `.mcp.json`.
+
+#### 8e. Prompt Injection en Configs de Proyecto
+- [ ] `CLAUDE.md`, `.cursorrules`, `.github/copilot-instructions.md` y archivos equivalentes en repos clonados de fuentes desconocidas se revisan manualmente antes de ejecutar cualquier agente de IA — pueden contener instrucciones maliciosas dirigidas al modelo.
+- [ ] Nunca ejecutar Claude Code (ni Cursor, Copilot, etc.) en repos no confiables sin revisar primero todos los archivos de configuración de IA.
+- [ ] Los prompts del sistema y archivos de instrucciones del proyecto están bajo control de versiones y se revisan en cada PR como cualquier otro código.
+
+#### 8f. Tokens y Credenciales
+- [ ] Ningún token ni credencial está hardcodeado en código fuente, configs de CI, comentarios ni mensajes de commit — usar `git log -S 'token'` y `git log -S 'secret'` para verificar el historial.
+- [ ] `.mcp.json` y todos los archivos `.env*` están en `.gitignore` y no aparecen en `git ls-files`.
+- [ ] Existe un proceso documentado para rotar tokens periódicamente: npm token (`npm token list`), GitHub PAT, Anthropic API key.
+
+#### 8g. Código Generado por IA
+- [ ] Todo código generado por Claude u otro modelo pasa por revisión humana antes de cualquier deploy a producción.
+- [ ] No existen pipelines de deploy automático que tomen código generado sin al menos un paso de revisión manual o aprobación de PR.
+- [ ] Este audit de seguridad se ejecuta después de cada sesión larga con Claude Code en la que se hayan generado rutas de API, Server Actions, queries o lógica de autenticación.
+
+---
+
 ## Notas de stack
 
 - Usar el cliente de Supabase desde `src/lib/supabase/` — no instanciar clientes ad-hoc.
