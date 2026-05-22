@@ -16,8 +16,7 @@ export async function createEmployeeAction(formData: FormData): Promise<ActionRe
     ;({ supabase, businessId } = await getBusiness())
   } catch (e) {
     if (isRedirectError(e)) throw e
-    const msg = e instanceof Error ? e.message : 'Error al obtener el negocio'
-    return { error: msg }
+    return { error: 'Error de conexión. Inténtalo de nuevo.' }
   }
 
   const { error } = await supabase.from('employees').insert({
@@ -42,8 +41,7 @@ export async function updateEmployeeAction(formData: FormData): Promise<ActionRe
     ;({ supabase, businessId } = await getBusiness())
   } catch (e) {
     if (isRedirectError(e)) throw e
-    const msg = e instanceof Error ? e.message : 'Error al obtener el negocio'
-    return { error: msg }
+    return { error: 'Error de conexión. Inténtalo de nuevo.' }
   }
 
   const { error } = await supabase
@@ -66,8 +64,7 @@ export async function deleteEmployeeAction(formData: FormData): Promise<ActionRe
     ;({ supabase, businessId } = await getBusiness())
   } catch (e) {
     if (isRedirectError(e)) throw e
-    const msg = e instanceof Error ? e.message : 'Error al obtener el negocio'
-    return { error: msg }
+    return { error: 'Error de conexión. Inténtalo de nuevo.' }
   }
 
   const { error } = await supabase

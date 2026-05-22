@@ -42,8 +42,7 @@ export async function createServiceAction(formData: FormData): Promise<ActionRes
     ;({ supabase, businessId } = await getBusiness())
   } catch (e) {
     if (isRedirectError(e)) throw e
-    const msg = e instanceof Error ? e.message : 'Error al obtener el negocio'
-    return { error: msg }
+    return { error: 'Error de conexión. Inténtalo de nuevo.' }
   }
 
   const { error } = await supabase.from('services').insert({
@@ -68,8 +67,7 @@ export async function updateServiceAction(formData: FormData): Promise<ActionRes
     ;({ supabase, businessId } = await getBusiness())
   } catch (e) {
     if (isRedirectError(e)) throw e
-    const msg = e instanceof Error ? e.message : 'Error al obtener el negocio'
-    return { error: msg }
+    return { error: 'Error de conexión. Inténtalo de nuevo.' }
   }
 
   const { error } = await supabase
@@ -89,8 +87,7 @@ export async function deleteServiceAction(id: string): Promise<ActionResult> {
     ;({ supabase, businessId } = await getBusiness())
   } catch (e) {
     if (isRedirectError(e)) throw e
-    const msg = e instanceof Error ? e.message : 'Error al obtener el negocio'
-    return { error: msg }
+    return { error: 'Error de conexión. Inténtalo de nuevo.' }
   }
 
   // Block deletion if active bookings reference this service (FK constraint)

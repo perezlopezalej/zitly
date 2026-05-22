@@ -181,7 +181,7 @@ export default async function ReservationsPage({ searchParams }: PageProps) {
                       {booking.client_name ?? '—'}
                     </p>
                     <span
-                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLOR[booking.status]}`}
+                      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLOR[booking.status] ?? 'bg-gray-100 text-gray-600'}`}
                     >
                       {STATUS_LABEL[booking.status]}
                     </span>
