@@ -3,8 +3,10 @@
 import { createSupabaseServerClient } from '@/lib/supabase'
 import { getBusiness } from '@/lib/actions'
 import { validateLength } from '@/lib/validation'
+import { todayISO } from '@/lib/format'
 import { revalidatePath } from 'next/cache'
-import { BOOKING_HOURS_START, BOOKING_HOURS_END, BOOKING_SLOT_INTERVAL } from '@/lib/booking'
+import { BOOKING_HOURS_START, BOOKING_HOURS_END, BOOKING_SLOT_INTERVAL, ALLOWED_STATUS_TRANSITIONS } from '@/lib/booking'
+import type { AllowedStatus } from '@/lib/booking'
 
 // ─── Create booking (public — no auth required) ──────────────────────────────
 
@@ -40,8 +42,7 @@ export async function createBookingAction(
   if (!/^\d{4}-\d{2}-\d{2}$/.test(input.date)) {
     return { error: 'Fecha no válida' }
   }
-  const todayISO = new Date().toISOString().split('T')[0]
-  if (isNaN(new Date(input.date).getTime()) || input.date < todayISO) {
+  if (isNaN(new Date(input.date).getTime()) || input.date < todayISO()) {
     return { error: 'La fecha no puede ser en el pasado' }
   }
   if (!TIME_RE.test(input.time)) {
@@ -135,10 +136,10 @@ export async function createBookingAction(
 
 // ─── Update booking status (business owner only) ─────────────────────────────
 
-const ALLOWED_STATUS_TRANSITIONS = ['confirmed', 'cancelled'] as const
-type AllowedStatus = (typeof ALLOWED_STATUS_TRANSITIONS)[number]
-
-export async function updateBookingStatusAction(formData: FormData) {
+export async function updateBookingStatusAction(
+  _prevState: { error: string } | undefined,
+  formData: FormData,
+): Promise<{ error: string } | undefined> {
   const bookingId = (formData.get('bookingId') as string)?.trim()
   const rawStatus = formData.get('status') as string
 
@@ -150,11 +151,13 @@ export async function updateBookingStatusAction(formData: FormData) {
 
   const { supabase, businessId } = await getBusiness()
 
-  await supabase
+  const { error } = await supabase
     .from('bookings')
     .update({ status })
     .eq('id', bookingId)
     .eq('business_id', businessId)
+
+  if (error) return { error: 'Error al actualizar la reserva. Inténtalo de nuevo.' }
 
   revalidatePath('/dashboard/reservations')
 }

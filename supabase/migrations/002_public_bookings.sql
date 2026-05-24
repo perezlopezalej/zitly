@@ -20,11 +20,14 @@ CREATE POLICY "businesses: public read"
 DROP POLICY "employees: public read" ON employees;
 CREATE POLICY "employees: public read"
   ON employees FOR SELECT
+  -- INTENCIONADO: el flujo /book necesita listar empleados sin autenticación
+  -- para que el cliente elija profesional al reservar. Ver booking.ts.
   USING (true);
 
 DROP POLICY "services: public read" ON services;
 CREATE POLICY "services: public read"
   ON services FOR SELECT
+  -- INTENCIONADO: el selector de servicios en /book es público.
   USING (true);
 
 -- ────────────────────────────────────────────────────────────

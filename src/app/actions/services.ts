@@ -110,10 +110,7 @@ export async function deleteServiceAction(id: string): Promise<ActionResult> {
     .eq('id', id)
     .eq('business_id', businessId)
 
-  if (error) {
-    console.error('[deleteServiceAction]', error.code, error.message)
-    return { error: 'Error al eliminar el servicio. Inténtalo de nuevo.' }
-  }
+  if (error) return { error: 'Error al eliminar el servicio. Inténtalo de nuevo.' }
 
   revalidatePath('/dashboard/services')
 }

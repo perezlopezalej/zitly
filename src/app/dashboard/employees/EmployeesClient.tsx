@@ -6,8 +6,9 @@ import {
   deleteEmployeeAction,
   updateEmployeeAction,
 } from '@/app/actions/employees'
+import { useSuccessToast } from '@/hooks/useSuccessToast'
 import type { Employee } from '@/types'
-import { getInitials, avatarColor } from '@/lib/format'
+import { getInitials, AVATAR_COLOR } from '@/lib/format'
 import { TrashIcon, PencilIcon } from '@/components/icons'
 import { ErrorAlert } from '@/components/ErrorAlert'
 
@@ -19,6 +20,7 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
   const [editingName, setEditingName] = useState('')
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
+  const { message: successMsg, show: showSuccess } = useSuccessToast()
 
   const isPending = isCreating || isMutating
 
@@ -32,6 +34,7 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
       const result = await createEmployeeAction(formData)
       if (result?.error) { setActionError(result.error); return }
       formRef.current?.reset()
+      showSuccess('Empleado añadido')
     })
   }
 
@@ -58,6 +61,7 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
       if (result?.error) { setActionError(result.error); return }
       setEditingId(null)
       setEditingName('')
+      showSuccess('Empleado actualizado')
     })
   }
 
@@ -81,6 +85,7 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
       const result = await deleteEmployeeAction(formData)
       if (result?.error) { setActionError(result.error); return }
       setConfirmDeleteId(null)
+      showSuccess('Empleado eliminado')
     })
   }
 
@@ -94,6 +99,12 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
             : `${employees.length} empleado${employees.length !== 1 ? 's' : ''}`}
         </p>
       </div>
+
+      {successMsg && (
+        <div className="mb-4 rounded-md bg-green-50 border border-green-200 px-3 py-2">
+          <p className="text-sm text-green-700">{successMsg}</p>
+        </div>
+      )}
 
       {actionError && (
         <div className="mb-4">
@@ -141,7 +152,7 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
                 return (
                   <li key={employee.id} className="flex items-center gap-3 px-5 py-3.5">
                     <span
-                      className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 ${avatarColor(employee.name)}`}
+                      className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 ${AVATAR_COLOR}`}
                     >
                       {getInitials(editingName || employee.name)}
                     </span>
@@ -175,7 +186,7 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
                     <div className="flex items-center justify-between gap-4 flex-wrap">
                       <div className="flex items-center gap-3">
                         <span
-                          className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 ${avatarColor(employee.name)}`}
+                          className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 ${AVATAR_COLOR}`}
                         >
                           {getInitials(employee.name)}
                         </span>
@@ -208,7 +219,7 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
                 <li key={employee.id} className="flex items-center justify-between px-5 py-3.5">
                   <div className="flex items-center gap-3">
                     <span
-                      className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 ${avatarColor(employee.name)}`}
+                      className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 ${AVATAR_COLOR}`}
                     >
                       {getInitials(employee.name)}
                     </span>
@@ -219,7 +230,7 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
                       onClick={() => startEdit(employee)}
                       disabled={isPending}
                       aria-label={`Editar a ${employee.name}`}
-                      className="p-1.5 text-gray-400 hover:text-brand-green hover:bg-brand-green-subtle rounded-md transition-colors disabled:opacity-40"
+                      className="p-2.5 text-gray-400 hover:text-brand-green hover:bg-brand-green-subtle rounded-md transition-colors disabled:opacity-40"
                     >
                       <PencilIcon />
                     </button>
@@ -227,7 +238,7 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
                       onClick={() => startConfirmDelete(employee.id)}
                       disabled={isPending}
                       aria-label={`Eliminar a ${employee.name}`}
-                      className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-40"
+                      className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-40"
                     >
                       <TrashIcon />
                     </button>

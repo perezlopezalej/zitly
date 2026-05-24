@@ -6,6 +6,7 @@ import {
   updateServiceAction,
   deleteServiceAction,
 } from '@/app/actions/services'
+import { useSuccessToast } from '@/hooks/useSuccessToast'
 import type { Service } from '@/types'
 import { formatDuration, formatPrice } from '@/lib/format'
 import { XIcon, PlusIcon, PencilIcon, TrashIcon } from '@/components/icons'
@@ -18,6 +19,7 @@ export default function ServicesClient({ services }: { services: Service[] }) {
   const [modalError, setModalError] = useState<string | null>(null)
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+  const { message: successMsg, show: showSuccess } = useSuccessToast()
   const [isPending, startTransition] = useTransition()
 
   const openCreate = () => {
@@ -51,6 +53,7 @@ export default function ServicesClient({ services }: { services: Service[] }) {
         return
       }
       closeModal()
+      showSuccess(editingService ? 'Servicio actualizado' : 'Servicio creado')
     })
   }
 
@@ -59,7 +62,8 @@ export default function ServicesClient({ services }: { services: Service[] }) {
     setConfirmDeleteId(null)
     startTransition(async () => {
       const result = await deleteServiceAction(id)
-      if (result?.error) setDeleteError(result.error)
+      if (result?.error) { setDeleteError(result.error); return }
+      showSuccess('Servicio eliminado')
     })
   }
 
@@ -82,6 +86,12 @@ export default function ServicesClient({ services }: { services: Service[] }) {
           Añadir servicio
         </button>
       </div>
+
+      {successMsg && (
+        <div className="mb-4 rounded-md bg-green-50 border border-green-200 px-3 py-2">
+          <p className="text-sm text-green-700">{successMsg}</p>
+        </div>
+      )}
 
       {deleteError && (
         <div className="mb-4">
@@ -119,7 +129,7 @@ export default function ServicesClient({ services }: { services: Service[] }) {
                   <button
                     onClick={() => openEdit(service)}
                     aria-label={`Editar ${service.name}`}
-                    className="p-1.5 text-gray-400 hover:text-brand-green hover:bg-brand-green-subtle rounded-md transition-colors"
+                    className="p-2.5 text-gray-400 hover:text-brand-green hover:bg-brand-green-subtle rounded-md transition-colors"
                   >
                     <PencilIcon />
                   </button>
@@ -127,7 +137,7 @@ export default function ServicesClient({ services }: { services: Service[] }) {
                     onClick={() => setConfirmDeleteId(service.id)}
                     disabled={isPending}
                     aria-label={`Eliminar ${service.name}`}
-                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-40"
+                    className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-40"
                   >
                     <TrashIcon />
                   </button>

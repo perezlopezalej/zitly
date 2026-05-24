@@ -21,6 +21,7 @@ import { createBookingAction, type CreateBookingInput } from '../booking'
 // Mimics the builder API: .from().select().eq().gte() and
 // .from().insert().select().single() without requiring a real client.
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockInsertChain: any = {
   select: vi.fn().mockReturnThis(),
   single: vi.fn().mockResolvedValue({
@@ -29,6 +30,7 @@ const mockInsertChain: any = {
   }),
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockQueryChain: any = {
   select: vi.fn().mockReturnThis(),
   eq:     vi.fn().mockReturnThis(),
@@ -46,6 +48,7 @@ const TODAY = '2026-05-22'
 beforeAll(() => {
   vi.useFakeTimers()
   vi.setSystemTime(new Date(TODAY))
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   vi.mocked(createSupabaseServerClient).mockResolvedValue(mockSupabase as any)
 })
 

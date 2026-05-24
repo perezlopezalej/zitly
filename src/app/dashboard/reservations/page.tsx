@@ -246,7 +246,7 @@ function FilterPill({
   return (
     <Link
       href={href}
-      className={`px-3 py-2 rounded-full text-xs font-medium transition-colors ${
+      className={`px-3 py-3 rounded-full text-xs font-medium transition-colors ${
         active
           ? 'bg-brand-green text-white'
           : 'bg-gray-100 text-brand-muted hover:bg-gray-200'

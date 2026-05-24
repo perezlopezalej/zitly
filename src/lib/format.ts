@@ -25,6 +25,4 @@ export function getInitials(name: string): string {
     .toUpperCase()
 }
 
-export function avatarColor(_name: string): string {
-  return 'bg-brand-green text-white'
-}
+export const AVATAR_COLOR = 'bg-brand-green text-white'
