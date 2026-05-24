@@ -31,18 +31,15 @@ export async function proxy(request: NextRequest) {
     },
   )
 
-  // L1: getSession() reads the JWT from the cookie without a network call,
-  // which is intentional here for performance. A forged cookie could bypass
-  // this layer, but every protected Server Component calls getUser() which
-  // validates the token against Supabase servers — that is the security layer.
-  // This proxy is only a UX redirect guard, not the auth enforcement boundary.
+  // Validates the session token against Supabase servers (not just the local JWT),
+  // so a forged or revoked cookie cannot bypass this redirect guard.
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
+    data: { user },
+  } = await supabase.auth.getUser()
 
   const { pathname } = request.nextUrl
 
-  if (pathname.startsWith('/dashboard') && !session) {
+  if (pathname.startsWith('/dashboard') && !user) {
     return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 
