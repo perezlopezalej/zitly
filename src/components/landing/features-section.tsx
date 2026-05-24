@@ -2,7 +2,9 @@
 
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
 
-const features = [
+type VisualType = 'deploy' | 'ai' | 'collab';
+
+const features: Array<{ number: string; title: string; description: string; visual: VisualType }> = [
   {
     number: "01",
     title: "Reservas 24/7",
@@ -107,7 +109,7 @@ function CollabVisual() {
   );
 }
 
-function AnimatedVisual({ type }: { type: string }) {
+function AnimatedVisual({ type }: { type: VisualType }) {
   switch (type) {
     case "deploy": return <DeployVisual />;
     case "ai": return <AIVisual />;
@@ -156,7 +158,7 @@ export function FeaturesSection() {
 
   return (
     <section id="features" ref={sectionRef} className="relative py-24 lg:py-32">
-      <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
+      <div className="max-w-350 mx-auto px-6 lg:px-12">
         <div className="mb-16 lg:mb-24">
           <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-6">
             <span className="w-8 h-px bg-foreground/30" />

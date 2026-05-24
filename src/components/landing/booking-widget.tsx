@@ -185,7 +185,7 @@ export function BookingWidget() {
                       className={`shrink-0 text-[8.5px] font-semibold px-1.5 py-0.5 rounded-full ${
                         b.status === "confirmed"
                           ? "bg-primary/10 text-primary"
-                          : "bg-yellow-100 text-yellow-700"
+                          : "bg-amber-100 text-amber-800"
                       }`}
                     >
                       {b.status === "confirmed" ? "Conf." : "Pend."}

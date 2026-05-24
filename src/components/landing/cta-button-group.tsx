@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function CtaButtonGroup({ className }: { className?: string }) {
   return (
-    <div className={`flex flex-col sm:flex-row items-start gap-4${className ? ` ${className}` : ""}`}>
+    <div className={cn("flex flex-col sm:flex-row items-start gap-4", className)}>
       <Link
         href="/auth/register"
         className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 h-14 text-base rounded-full inline-flex items-center justify-center gap-2 font-medium group transition-colors"

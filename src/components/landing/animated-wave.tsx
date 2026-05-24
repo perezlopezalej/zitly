@@ -19,6 +19,9 @@ export function AnimatedWave() {
 
     const removeResizeListener = setupCanvas(canvas, ctx);
 
+    const colorMatch = getComputedStyle(canvas).color.match(/\d+/g);
+    const fgRGB = colorMatch ? `${colorMatch[0]},${colorMatch[1]},${colorMatch[2]}` : '0,0,0';
+
     const render = () => {
       const rect = canvas.getBoundingClientRect();
       ctx.clearRect(0, 0, rect.width, rect.height);
@@ -45,7 +48,7 @@ export function AnimatedWave() {
           const charIndex = Math.floor(normalized * (chars.length - 1));
           const alpha = 0.15 + normalized * 0.5;
 
-          ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
+          ctx.fillStyle = `rgba(${fgRGB}, ${alpha})`;
           ctx.fillText(chars[charIndex], px, py);
         }
       }

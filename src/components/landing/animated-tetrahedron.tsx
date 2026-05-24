@@ -19,6 +19,9 @@ export function AnimatedTetrahedron() {
 
     const removeResizeListener = setupCanvas(canvas, ctx);
 
+    const colorMatch = getComputedStyle(canvas).color.match(/\d+/g);
+    const fgRGB = colorMatch ? `${colorMatch[0]},${colorMatch[1]},${colorMatch[2]}` : '0,0,0';
+
     const vertices = [
       { x: 0, y: 1, z: 0 },
       { x: -0.943, y: -0.333, z: -0.5 },
@@ -132,7 +135,7 @@ export function AnimatedTetrahedron() {
 
       points.forEach((point) => {
         const alpha = 0.15 + (point.z + 1.5) * 0.25;
-        ctx.fillStyle = `rgba(0, 0, 0, ${Math.min(alpha, 0.9)})`;
+        ctx.fillStyle = `rgba(${fgRGB}, ${Math.min(alpha, 0.9)})`;
         ctx.fillText(point.char, point.x, point.y);
       });
 

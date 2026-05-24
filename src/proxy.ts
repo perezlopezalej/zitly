@@ -1,9 +1,14 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextRequest, NextResponse } from 'next/server'
 
-// M4: validated at module load — crashes early with a clear message if missing
-const SUPABASE_URL     = process.env.NEXT_PUBLIC_SUPABASE_URL     ?? ''
+const SUPABASE_URL      = process.env.NEXT_PUBLIC_SUPABASE_URL      ?? ''
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ''
+
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  throw new Error(
+    '[proxy] Faltan variables de entorno: NEXT_PUBLIC_SUPABASE_URL y/o NEXT_PUBLIC_SUPABASE_ANON_KEY',
+  )
+}
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request })

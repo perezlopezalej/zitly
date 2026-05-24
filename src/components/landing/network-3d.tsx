@@ -2,8 +2,8 @@
 
 import { useEffect, useRef } from "react";
 
-const PRIMARY_RGB = "44,95,63";    // --color-primary
-const NEUTRAL_RGB = "116,112,106"; // --color-foreground (muted)
+const PRIMARY_RGB = "44,95,63";    // Sync with --color-primary in globals.css
+const NEUTRAL_RGB = "116,112,106"; // Sync with --color-foreground in globals.css
 const G = (a: number) => `rgba(${PRIMARY_RGB},${Math.max(0, Math.min(1, a)).toFixed(3)})`;
 const M = (a: number) => `rgba(${NEUTRAL_RGB},${Math.max(0, Math.min(1, a)).toFixed(3)})`;
 

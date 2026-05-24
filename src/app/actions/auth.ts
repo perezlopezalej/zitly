@@ -43,7 +43,8 @@ export async function registerAction(
   })
 
   if (error) {
-    // Note: depends on Supabase error message string — verify if upgrading Supabase client
+    // Coupled to Supabase error message string (tested against @supabase/ssr@0.10.3).
+    // If upgrading Supabase, verify this string hasn't changed before deploying.
     if (error.message.includes('already registered')) {
       return { error: 'Este email ya está registrado' }
     }

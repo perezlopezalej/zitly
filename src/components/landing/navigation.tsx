@@ -14,6 +14,7 @@ const navLinks = [
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,6 +22,22 @@ export function Navigation() {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setActiveSection(entry.target.id);
+        }
+      },
+      { threshold: 0.4 },
+    );
+    navLinks.forEach(({ href }) => {
+      const el = document.getElementById(href.slice(1));
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -34,8 +51,8 @@ export function Navigation() {
       <nav
         className={`mx-auto transition-all duration-500 ${
           isScrolled || isMobileMenuOpen
-            ? "bg-background/80 backdrop-blur-xl border border-foreground/10 rounded-2xl shadow-lg max-w-[1200px]"
-            : "bg-transparent max-w-[1400px]"
+            ? "bg-background/80 backdrop-blur-xl border border-foreground/10 rounded-2xl shadow-lg max-w-300"
+            : "bg-transparent max-w-350"
         }`}
       >
         <div
@@ -56,6 +73,7 @@ export function Navigation() {
               <a
                 key={link.name}
                 href={link.href}
+                aria-current={link.href === `#${activeSection}` ? 'true' : undefined}
                 className="text-sm text-foreground/70 hover:text-foreground transition-colors duration-300 relative group"
               >
                 {link.name}
@@ -111,6 +129,7 @@ export function Navigation() {
               <a
                 key={link.name}
                 href={link.href}
+                aria-current={link.href === `#${activeSection}` ? 'true' : undefined}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={`text-5xl font-display text-foreground hover:text-muted-foreground transition-all duration-500 ${
                   isMobileMenuOpen

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { AnimatedWave } from "./animated-wave";
 
 const footerLinks = {
@@ -44,10 +45,12 @@ function LinkedInIcon() {
   );
 }
 
+const CURRENT_YEAR = new Date().getFullYear();
+
 const socialLinks = [
-  { name: "Twitter / X", href: "#", Icon: TwitterIcon, color: "#000000" },
-  { name: "GitHub", href: "#", Icon: GitHubIcon, color: "#24292F" },
-  { name: "LinkedIn", href: "#", Icon: LinkedInIcon, color: "#0A66C2" },
+  { name: "Twitter / X", href: "#", Icon: TwitterIcon },
+  { name: "GitHub", href: "#", Icon: GitHubIcon },
+  { name: "LinkedIn", href: "#", Icon: LinkedInIcon },
 ];
 
 export function FooterSection() {
@@ -58,33 +61,32 @@ export function FooterSection() {
         <AnimatedWave />
       </div>
 
-      <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12">
+      <div className="relative z-10 max-w-350 mx-auto px-6 lg:px-12">
         {/* Main Footer */}
         <div className="py-16 lg:py-24">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-12 lg:gap-8">
             {/* Brand Column */}
             <div className="col-span-2">
-              <a href="#" className="inline-flex items-center gap-2 mb-6">
+              <Link href="/" className="inline-flex items-center gap-2 mb-6">
                 <span className="text-2xl font-display">Zitly</span>
-              </a>
+              </Link>
 
               <p className="text-muted-foreground leading-relaxed mb-8 max-w-xs">
                 Sistema de reservas online para negocios de servicios. Tu agenda, siempre disponible.
               </p>
 
               <div className="flex gap-4">
-                {socialLinks.map(({ name, href, Icon, color }) => (
+                {socialLinks.map(({ name, href, Icon }) => (
                   <a
                     key={name}
                     href={href}
                     aria-label={name}
                     aria-disabled={href === "#" ? "true" : undefined}
-                    className={`w-9 h-9 flex items-center justify-center border border-foreground/10 transition-colors ${
+                    className={`w-9 h-9 flex items-center justify-center border border-foreground/10 text-foreground/70 transition-colors ${
                       href === "#"
                         ? "pointer-events-none opacity-50 cursor-default"
-                        : "hover:border-foreground/30"
+                        : "hover:border-foreground/30 hover:text-foreground"
                     }`}
-                    style={{ color }}
                   >
                     <Icon />
                   </a>
@@ -99,17 +101,18 @@ export function FooterSection() {
                 <ul className="space-y-4">
                   {links.map((link) => (
                     <li key={link.name}>
-                      <a
-                        href={link.href}
-                        aria-disabled={link.href === "#" ? "true" : undefined}
-                        className={`text-sm text-muted-foreground transition-colors ${
-                          link.href === "#"
-                            ? "pointer-events-none opacity-50 cursor-default"
-                            : "hover:text-foreground"
-                        }`}
-                      >
-                        {link.name}
-                      </a>
+                      {link.href === '#' ? (
+                        <span className="text-sm text-muted-foreground opacity-50 cursor-default">
+                          {link.name}
+                        </span>
+                      ) : (
+                        <a
+                          href={link.href}
+                          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          {link.name}
+                        </a>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -121,7 +124,7 @@ export function FooterSection() {
         {/* Bottom Bar */}
         <div className="py-8 border-t border-foreground/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            {new Date().getFullYear()} Zitly. Todos los derechos reservados.
+            {CURRENT_YEAR} Zitly. Todos los derechos reservados.
           </p>
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <span className="flex items-center gap-2">

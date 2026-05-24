@@ -4,6 +4,7 @@ import { getBusiness } from '@/lib/actions'
 import { validateLength } from '@/lib/validation'
 import { revalidatePath } from 'next/cache'
 import { isRedirectError } from 'next/dist/client/components/redirect-error'
+import { countActiveBookings } from '@/lib/booking'
 import type { ActionResult } from '@/types'
 
 export async function createEmployeeAction(formData: FormData): Promise<ActionResult> {
@@ -68,16 +69,10 @@ export async function deleteEmployeeAction(formData: FormData): Promise<ActionRe
   }
 
   // Block deletion if active bookings reference this employee (FK constraint)
-  const { count } = await supabase
-    .from('bookings')
-    .select('*', { count: 'exact', head: true })
-    .eq('employee_id', id)
-    .eq('business_id', businessId)
-    .neq('status', 'cancelled')
-
-  if ((count ?? 0) > 0) {
+  const activeCount = await countActiveBookings(supabase, 'employee_id', id, businessId)
+  if (activeCount > 0) {
     return {
-      error: `Este empleado tiene ${count} reserva${count === 1 ? '' : 's'} activa${count === 1 ? '' : 's'}. Cancélalas antes de eliminarlo.`,
+      error: `Este empleado tiene ${activeCount} reserva${activeCount === 1 ? '' : 's'} activa${activeCount === 1 ? '' : 's'}. Cancélalas antes de eliminarlo.`,
     }
   }
 

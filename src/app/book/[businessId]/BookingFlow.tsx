@@ -158,12 +158,30 @@ export default function BookingFlow({ business, services, employees }: Props) {
             Estado: pendiente de confirmación · {clientEmail}
           </p>
 
-          <Link
-            href="/"
-            className="inline-block text-sm text-brand-green hover:text-brand-green-dark font-medium"
-          >
-            ← Volver al inicio
-          </Link>
+          <div className="flex flex-col items-center gap-3">
+            <button
+              onClick={() => {
+                setStep('service')
+                setSelectedService(null)
+                setSelectedEmployee(null)
+                setSelectedDate('')
+                setSelectedTime('')
+                setClientName('')
+                setClientEmail('')
+                setBooking(null)
+                setError('')
+              }}
+              className="text-sm font-medium text-brand-green hover:text-brand-green-dark"
+            >
+              Hacer otra reserva
+            </button>
+            <Link
+              href="/"
+              className="inline-block text-sm text-brand-muted hover:text-gray-600"
+            >
+              ← Volver al inicio
+            </Link>
+          </div>
         </div>
       </div>
     )
@@ -198,9 +216,14 @@ export default function BookingFlow({ business, services, employees }: Props) {
               Elige un servicio
             </h2>
             {services.length === 0 ? (
-              <p className="text-sm text-gray-400">
-                Este negocio aún no tiene servicios disponibles.
-              </p>
+              <div className="space-y-4">
+                <p className="text-sm text-gray-400">
+                  Este negocio aún no tiene servicios disponibles.
+                </p>
+                <Link href="/" className="text-sm text-brand-green hover:underline">
+                  ← Volver al inicio
+                </Link>
+              </div>
             ) : (
               <div className="space-y-3">
                 {services.map((service) => (
@@ -274,10 +297,11 @@ export default function BookingFlow({ business, services, employees }: Props) {
             </h2>
             <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="booking-date" className="block text-sm font-medium text-gray-700 mb-1">
                   Fecha
                 </label>
                 <input
+                  id="booking-date"
                   type="date"
                   min={todayISO()}
                   max={maxDateISO()}
@@ -292,10 +316,10 @@ export default function BookingFlow({ business, services, employees }: Props) {
 
               {selectedDate && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <p id="hora-label" className="block text-sm font-medium text-gray-700 mb-2">
                     Hora
-                  </label>
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                  </p>
+                  <div role="group" aria-labelledby="hora-label" className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                     {timeSlots.map((slot) => (
                       <button
                         key={slot}
@@ -339,11 +363,13 @@ export default function BookingFlow({ business, services, employees }: Props) {
 
             <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="client-name" className="block text-sm font-medium text-gray-700 mb-1">
                   Nombre
                 </label>
                 <input
+                  id="client-name"
                   type="text"
+                  required
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
                   placeholder="Tu nombre"
@@ -352,11 +378,13 @@ export default function BookingFlow({ business, services, employees }: Props) {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="client-email" className="block text-sm font-medium text-gray-700 mb-1">
                   Email
                 </label>
                 <input
+                  id="client-email"
                   type="email"
+                  required
                   value={clientEmail}
                   onChange={(e) => setClientEmail(e.target.value)}
                   placeholder="tu@email.com"

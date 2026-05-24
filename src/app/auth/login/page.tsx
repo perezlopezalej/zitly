@@ -10,7 +10,7 @@ export default function LoginPage() {
             Sistema de reservas
           </p>
           <h2 className="font-display text-4xl xl:text-5xl font-bold italic leading-snug mb-6">
-            Gestiona tus citas.<br />Sin fricción.
+            Gestiona tus reservas.<br />Sin fricción.
           </h2>
           <p className="text-brand-green-light text-sm leading-relaxed max-w-xs">
             Miles de negocios confían en Zitly para automatizar sus reservas y

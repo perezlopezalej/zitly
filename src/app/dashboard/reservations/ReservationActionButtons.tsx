@@ -17,7 +17,7 @@ export function ConfirmButton({ bookingId }: { bookingId: string }) {
         <button
           type="submit"
           disabled={pending}
-          className="px-3 py-1.5 text-xs font-medium rounded-lg bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition-colors disabled:opacity-50"
+          className="px-3 min-h-11 inline-flex items-center text-xs font-medium rounded-lg bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 transition-colors disabled:opacity-50"
         >
           {pending ? 'Guardando…' : 'Confirmar'}
         </button>
@@ -42,7 +42,7 @@ export function CancelButton({ bookingId }: { bookingId: string }) {
           <button
             type="button"
             onClick={() => setConfirming(false)}
-            className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+            className="px-3 min-h-11 inline-flex items-center text-xs font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
           >
             No
           </button>
@@ -52,7 +52,7 @@ export function CancelButton({ bookingId }: { bookingId: string }) {
             <button
               type="submit"
               disabled={pending}
-              className="px-3 py-1.5 text-xs font-medium rounded-lg bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors disabled:opacity-50"
+              className="px-3 min-h-11 inline-flex items-center text-xs font-medium rounded-lg bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors disabled:opacity-50"
             >
               {pending ? 'Guardando…' : 'Sí, cancelar'}
             </button>
@@ -69,7 +69,7 @@ export function CancelButton({ bookingId }: { bookingId: string }) {
       <button
         type="button"
         onClick={() => setConfirming(true)}
-        className="px-3 py-1.5 text-xs font-medium rounded-lg bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors"
+        className="px-3 min-h-11 inline-flex items-center text-xs font-medium rounded-lg bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors"
       >
         Cancelar
       </button>

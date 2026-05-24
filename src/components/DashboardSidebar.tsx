@@ -58,6 +58,7 @@ export default function DashboardSidebar() {
             <Link
               key={href}
               href={href}
+              aria-current={isActive(pathname, href, exact) ? 'page' : undefined}
               className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 isActive(pathname, href, exact)
                   ? 'bg-brand-green-subtle text-brand-green-dark'
@@ -80,6 +81,7 @@ export default function DashboardSidebar() {
               <Link
                 key={href}
                 href={href}
+                aria-current={active ? 'page' : undefined}
                 className={`relative flex-1 flex flex-col items-center justify-center gap-1 transition-colors ${
                   active ? 'text-brand-green' : 'text-brand-muted hover:text-brand-ink'
                 }`}

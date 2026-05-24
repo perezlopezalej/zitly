@@ -7,6 +7,7 @@ import { todayISO } from '@/lib/format'
 import { revalidatePath } from 'next/cache'
 import { BOOKING_HOURS_START, BOOKING_HOURS_END, BOOKING_SLOT_INTERVAL, ALLOWED_STATUS_TRANSITIONS } from '@/lib/booking'
 import type { AllowedStatus } from '@/lib/booking'
+import { isRedirectError } from 'next/dist/client/components/redirect-error'
 
 // ─── Create booking (public — no auth required) ──────────────────────────────
 
@@ -28,10 +29,16 @@ export type CreateBookingResult =
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const TIME_RE  = /^([01]\d|2[0-3]):[0-5]\d$/
+const UUID_RE  = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 export async function createBookingAction(
   input: CreateBookingInput,
 ): Promise<CreateBookingResult> {
+  // Reject malformed UUIDs before hitting the database
+  if (!UUID_RE.test(input.businessId)) return { error: 'Negocio no válido' }
+  if (!UUID_RE.test(input.serviceId))  return { error: 'Servicio no válido' }
+  if (input.employeeId && !UUID_RE.test(input.employeeId)) return { error: 'Empleado no válido' }
+
   // H3: server-side input validation (HTML constraints are bypassable)
   if (!validateLength(input.clientName.trim(), 1, 200)) {
     return { error: 'Nombre no válido' }
@@ -149,7 +156,13 @@ export async function updateBookingStatusAction(
   if (!(ALLOWED_STATUS_TRANSITIONS as readonly string[]).includes(rawStatus)) return
   const status = rawStatus as AllowedStatus
 
-  const { supabase, businessId } = await getBusiness()
+  let supabase, businessId
+  try {
+    ;({ supabase, businessId } = await getBusiness())
+  } catch (e) {
+    if (isRedirectError(e)) throw e
+    return { error: 'Error de conexión. Inténtalo de nuevo.' }
+  }
 
   const { error } = await supabase
     .from('bookings')

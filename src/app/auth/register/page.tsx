@@ -19,7 +19,7 @@ export default function RegisterPage() {
             </li>
             <li className="flex items-start gap-2.5">
               <span className="mt-0.5 text-brand-green-light">✓</span>
-              Gestión de servicios, empleados y citas
+              Gestión de servicios, empleados y reservas
             </li>
             <li className="flex items-start gap-2.5">
               <span className="mt-0.5 text-brand-green-light">✓</span>

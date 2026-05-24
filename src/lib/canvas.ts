@@ -7,6 +7,7 @@ export function setupCanvas(
     const rect = canvas.getBoundingClientRect()
     canvas.width = rect.width * dpr
     canvas.height = rect.height * dpr
+    ctx.resetTransform()
     ctx.scale(dpr, dpr)
   }
   resize()

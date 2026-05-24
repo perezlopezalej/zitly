@@ -19,6 +19,9 @@ export function AnimatedSphere() {
 
     const removeResizeListener = setupCanvas(canvas, ctx);
 
+    const colorMatch = getComputedStyle(canvas).color.match(/\d+/g);
+    const fgRGB = colorMatch ? `${colorMatch[0]},${colorMatch[1]},${colorMatch[2]}` : '0,0,0';
+
     const render = () => {
       const rect = canvas.getBoundingClientRect();
       ctx.clearRect(0, 0, rect.width, rect.height);
@@ -63,7 +66,7 @@ export function AnimatedSphere() {
 
       points.forEach((point) => {
         const alpha = 0.2 + (point.z + 1) * 0.4;
-        ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
+        ctx.fillStyle = `rgba(${fgRGB}, ${alpha})`;
         ctx.fillText(point.char, point.x, point.y);
       });
 

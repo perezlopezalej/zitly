@@ -47,11 +47,12 @@ export function HowItWorksSection() {
   const [sectionRef, isVisible] = useIntersectionObserver(0.1);
 
   useEffect(() => {
+    if (!isVisible) return;
     const interval = setInterval(() => {
       setActiveStep((prev) => (prev + 1) % steps.length);
     }, AUTOADVANCE_MS);
     return () => clearInterval(interval);
-  }, []);
+  }, [isVisible]);
 
   return (
     <section
@@ -75,7 +76,7 @@ export function HowItWorksSection() {
         />
       </div>
 
-      <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12">
+      <div className="relative z-10 max-w-350 mx-auto px-6 lg:px-12">
         <div className="mb-16 lg:mb-24">
           <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-6">
             <span className="w-8 h-px bg-foreground/30" />
@@ -115,7 +116,7 @@ export function HowItWorksSection() {
                       <div className="mt-4 h-px bg-foreground/20 overflow-hidden">
                         <div
                           className="h-full bg-foreground w-0"
-                          style={{ animation: "progress 5s linear forwards" }}
+                          style={{ animation: `progress ${AUTOADVANCE_MS / 1000}s linear forwards` }}
                         />
                       </div>
                     )}
@@ -137,7 +138,7 @@ export function HowItWorksSection() {
                 <span className="text-xs font-mono text-muted-foreground">agenda.js</span>
               </div>
 
-              <div className="p-8 font-mono text-sm min-h-[280px]">
+              <div className="p-8 font-mono text-sm min-h-70">
                 <pre className="text-foreground/80">
                   {steps[activeStep].code.split("\n").map((line, lineIndex) => (
                     <div

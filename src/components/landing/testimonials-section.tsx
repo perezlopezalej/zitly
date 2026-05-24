@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const testimonials = [
   {
@@ -36,6 +36,9 @@ const testimonials = [
 export function TestimonialsSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const clickTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  useEffect(() => () => { clearTimeout(clickTimeoutRef.current); }, []);
 
   useEffect(() => {
     let timeoutId: ReturnType<typeof setTimeout>
@@ -120,8 +123,9 @@ export function TestimonialsSection() {
                   key={idx}
                   aria-label={`Ver testimonio de ${t.author}`}
                   onClick={() => {
+                    clearTimeout(clickTimeoutRef.current);
                     setIsAnimating(true);
-                    setTimeout(() => {
+                    clickTimeoutRef.current = setTimeout(() => {
                       setActiveIndex(idx);
                       setIsAnimating(false);
                     }, 300);

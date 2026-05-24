@@ -15,13 +15,13 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "Zitly — Sistema de reservas para negocios",
-  description: "Gestiona las citas de tu negocio de forma sencilla. Reservas online 24/7, sin complicaciones.",
+  description: "Gestiona las reservas de tu negocio de forma sencilla. Disponible online 24/7, sin complicaciones.",
   icons: {
     icon: "/favicon.svg",
   },
   openGraph: {
     title: "Zitly — Sistema de reservas para negocios",
-    description: "Gestiona las citas de tu negocio de forma sencilla. Reservas online 24/7, sin complicaciones.",
+    description: "Gestiona las reservas de tu negocio de forma sencilla. Disponible online 24/7, sin complicaciones.",
     url: "https://zitly.es",
     siteName: "Zitly",
     images: [
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Zitly — Sistema de reservas para negocios",
-    description: "Gestiona las citas de tu negocio de forma sencilla. Reservas online 24/7, sin complicaciones.",
+    description: "Gestiona las reservas de tu negocio de forma sencilla. Disponible online 24/7, sin complicaciones.",
     images: ["/og.png"],
   },
 };

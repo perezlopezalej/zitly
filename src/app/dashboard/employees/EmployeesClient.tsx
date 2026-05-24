@@ -11,6 +11,15 @@ import type { Employee } from '@/types'
 import { getInitials, AVATAR_COLOR } from '@/lib/format'
 import { TrashIcon, PencilIcon } from '@/components/icons'
 import { ErrorAlert } from '@/components/ErrorAlert'
+import { SuccessAlert } from '@/components/SuccessAlert'
+
+function EmployeeAvatar({ name }: { name: string }) {
+  return (
+    <span className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 ${AVATAR_COLOR}`}>
+      {getInitials(name)}
+    </span>
+  )
+}
 
 export default function EmployeesClient({ employees }: { employees: Employee[] }) {
   const [isCreating, startCreate] = useTransition()
@@ -101,8 +110,8 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
       </div>
 
       {successMsg && (
-        <div className="mb-4 rounded-md bg-green-50 border border-green-200 px-3 py-2">
-          <p className="text-sm text-green-700">{successMsg}</p>
+        <div className="mb-4">
+          <SuccessAlert message={successMsg} compact />
         </div>
       )}
 
@@ -124,7 +133,7 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
               name="name"
               required
               placeholder="Nombre del empleado"
-              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm text-brand-ink placeholder-brand-muted focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
+              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-base text-brand-ink placeholder-brand-muted focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
             />
             <button
               type="submit"
@@ -151,11 +160,7 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
               if (isEditing) {
                 return (
                   <li key={employee.id} className="flex items-center gap-3 px-5 py-3.5">
-                    <span
-                      className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 ${AVATAR_COLOR}`}
-                    >
-                      {getInitials(editingName || employee.name)}
-                    </span>
+                    <EmployeeAvatar name={editingName || employee.name} />
                     <input
                       autoFocus
                       value={editingName}
@@ -185,11 +190,7 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
                   <li key={employee.id} className="px-5 py-3.5">
                     <div className="flex items-center justify-between gap-4 flex-wrap">
                       <div className="flex items-center gap-3">
-                        <span
-                          className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 ${AVATAR_COLOR}`}
-                        >
-                          {getInitials(employee.name)}
-                        </span>
+                        <EmployeeAvatar name={employee.name} />
                         <span className="text-sm text-gray-600">
                           ¿Eliminar a{' '}
                           <span className="font-medium text-gray-900">{employee.name}</span>?
@@ -218,11 +219,7 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
               return (
                 <li key={employee.id} className="flex items-center justify-between px-5 py-3.5">
                   <div className="flex items-center gap-3">
-                    <span
-                      className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 ${AVATAR_COLOR}`}
-                    >
-                      {getInitials(employee.name)}
-                    </span>
+                    <EmployeeAvatar name={employee.name} />
                     <span className="text-sm font-medium text-gray-900">{employee.name}</span>
                   </div>
                   <div className="flex items-center gap-1">

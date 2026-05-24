@@ -4,6 +4,7 @@ import { getBusiness } from '@/lib/actions'
 import { validateLength } from '@/lib/validation'
 import { revalidatePath } from 'next/cache'
 import { isRedirectError } from 'next/dist/client/components/redirect-error'
+import { countActiveBookings } from '@/lib/booking'
 import type { ActionResult } from '@/types'
 
 function validateServiceFields(formData: FormData): { error: string } | {
@@ -91,16 +92,10 @@ export async function deleteServiceAction(id: string): Promise<ActionResult> {
   }
 
   // Block deletion if active bookings reference this service (FK constraint)
-  const { count } = await supabase
-    .from('bookings')
-    .select('*', { count: 'exact', head: true })
-    .eq('service_id', id)
-    .eq('business_id', businessId)
-    .neq('status', 'cancelled')
-
-  if ((count ?? 0) > 0) {
+  const activeCount = await countActiveBookings(supabase, 'service_id', id, businessId)
+  if (activeCount > 0) {
     return {
-      error: `Este servicio tiene ${count} reserva${count === 1 ? '' : 's'} activa${count === 1 ? '' : 's'}. Cancélalas antes de eliminarlo.`,
+      error: `Este servicio tiene ${activeCount} reserva${activeCount === 1 ? '' : 's'} activa${activeCount === 1 ? '' : 's'}. Cancélalas antes de eliminarlo.`,
     }
   }
 

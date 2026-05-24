@@ -1,23 +1,7 @@
 import Link from 'next/link'
 import { getBusiness } from '@/lib/actions'
-import { todayISO } from '@/lib/format'
-
-function monthRange() {
-  const now = new Date()
-  const y = now.getFullYear()
-  const m = now.getMonth()
-  return {
-    start: new Date(y, m, 1).toISOString().split('T')[0],
-    end: new Date(y, m + 1, 0).toISOString().split('T')[0],
-  }
-}
-
-type UpcomingBooking = {
-  id: string
-  time: string
-  client_name: string | null
-  services: { name: string } | null
-}
+import { todayISO, monthRange } from '@/lib/format'
+import type { Booking } from '@/types'
 
 export default async function DashboardPage() {
   const { supabase, businessId, businessName } = await getBusiness()
@@ -59,7 +43,7 @@ export default async function DashboardPage() {
       .limit(3),
   ])
 
-  const upcoming = (upcomingRaw ?? []) as unknown as UpcomingBooking[]
+  const upcoming = (upcomingRaw ?? []) as unknown as Pick<Booking, 'id' | 'time' | 'client_name' | 'services'>[]
 
   return (
     <div>

@@ -15,9 +15,9 @@ export function MetricsSection() {
   const [sectionRef, isVisible] = useIntersectionObserver(0.1);
 
   useEffect(() => {
-    const frame = requestAnimationFrame(() => setTime(new Date().toLocaleTimeString()));
+    setTime(new Date().toLocaleTimeString());
     const interval = setInterval(() => setTime(new Date().toLocaleTimeString()), 1000);
-    return () => { cancelAnimationFrame(frame); clearInterval(interval); };
+    return () => clearInterval(interval);
   }, []);
 
   return (

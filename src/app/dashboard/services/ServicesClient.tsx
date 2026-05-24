@@ -11,6 +11,7 @@ import type { Service } from '@/types'
 import { formatDuration, formatPrice } from '@/lib/format'
 import { XIcon, PlusIcon, PencilIcon, TrashIcon } from '@/components/icons'
 import { ErrorAlert } from '@/components/ErrorAlert'
+import { SuccessAlert } from '@/components/SuccessAlert'
 
 
 export default function ServicesClient({ services }: { services: Service[] }) {
@@ -88,8 +89,8 @@ export default function ServicesClient({ services }: { services: Service[] }) {
       </div>
 
       {successMsg && (
-        <div className="mb-4 rounded-md bg-green-50 border border-green-200 px-3 py-2">
-          <p className="text-sm text-green-700">{successMsg}</p>
+        <div className="mb-4">
+          <SuccessAlert message={successMsg} compact />
         </div>
       )}
 
@@ -216,10 +217,11 @@ export default function ServicesClient({ services }: { services: Service[] }) {
               {modalError && <ErrorAlert message={modalError} compact />}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="svc-name" className="block text-sm font-medium text-gray-700 mb-1">
                   Nombre <span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="svc-name"
                   type="text"
                   name="name"
                   required
@@ -230,10 +232,11 @@ export default function ServicesClient({ services }: { services: Service[] }) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="svc-description" className="block text-sm font-medium text-gray-700 mb-1">
                   Descripción
                 </label>
                 <textarea
+                  id="svc-description"
                   name="description"
                   rows={2}
                   defaultValue={editingService?.description ?? ''}
@@ -244,24 +247,26 @@ export default function ServicesClient({ services }: { services: Service[] }) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="svc-duration" className="block text-sm font-medium text-gray-700 mb-1">
                     Duración (min) <span className="text-red-500">*</span>
                   </label>
                   <input
+                    id="svc-duration"
                     type="number"
                     name="duration_minutes"
                     required
                     min={1}
                     defaultValue={editingService?.duration_minutes ?? 30}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-brand-ink focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-base text-brand-ink focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="svc-price" className="block text-sm font-medium text-gray-700 mb-1">
                     Precio (€) <span className="text-red-500">*</span>
                   </label>
                   <input
+                    id="svc-price"
                     type="number"
                     name="price"
                     required
