@@ -85,8 +85,35 @@ Presenta los findings como tabla antes de aplicar ningún cambio:
 
 ## Notas de stack
 
-- `src/lib/supabase/` contiene los clientes — no crear instancias nuevas fuera de ahí.
-- `src/types/` es la fuente de verdad para tipos de dominio; los tipos generados por Supabase CLI también viven ahí.
-- `src/components/ui/` es para componentes genéricos sin lógica de negocio; `src/components/` para los específicos de Zitly.
-- En Next.js 16 App Router, no mezclar Server y Client Components en el mismo archivo — si un componente necesita hooks, separarlo con `'use client'` en su propio archivo.
-- No extraer abstracciones para un solo uso — el umbral mínimo para extraer es **2 usos existentes** (no hipotéticos).
+- `src/lib/supabase.ts` contiene `createSupabaseServerClient()` — no instanciar Supabase fuera de ahí.
+- `src/lib/actions.ts` exporta `getBusiness()` — el único punto de acceso a auth + businessId en Server Actions.
+- `src/lib/validation.ts` exporta `validateLength()` — las validaciones de longitud no se reimplementan inline.
+- `src/types/index.ts` es la fuente de verdad para tipos de dominio (`ActionResult`, `Employee`, `Service`, `Booking`, `BookingStatus`).
+- `src/components/ui/` es para componentes genéricos sin lógica de negocio; `src/components/landing/` para la landing page.
+- En Next.js 16 App Router, no mezclar Server y Client Components — si necesita hooks, `'use client'` en su propio archivo.
+- No extraer abstracciones para un solo uso — el umbral mínimo es **2 usos existentes** (no hipotéticos).
+
+## Patrones reales observados en el proyecto
+
+### Patrón de Server Action (no es duplicación a eliminar)
+El bloque try/catch con `isRedirectError` se repite en cada action — es intencional. El re-throw es crítico para que el redirect de auth funcione:
+```ts
+try {
+  ;({ supabase, businessId } = await getBusiness())
+} catch (e) {
+  if (isRedirectError(e)) throw e
+  return { error: 'Error de conexión. Inténtalo de nuevo.' }
+}
+```
+
+### Constantes de landing centralizadas
+`src/components/landing/constants.ts` — timing constants (`AUTOADVANCE_MS`, `NOTIF_INITIAL_MS`, `NOTIF_VISIBLE_MS`). Si aparecen números mágicos de timing en otros componentes de landing, moverlos aquí.
+
+### Clases de animación en globals.css
+`.marquee`, `.marquee-reverse`, `.line-reveal`, `.hover-lift`, `.letter-spin`, `.animate-char-in`, `.noise-overlay`, `.border-sketch` están en `globals.css`. No reescribirlas inline en componentes.
+
+### Hook de intersection observer ya existe
+`src/hooks/useIntersectionObserver.ts` — si un componente implementa su propio `IntersectionObserver` manual, reemplazarlo con este hook.
+
+### Tokens de color — nunca hardcodear
+Todos los colores son tokens en `globals.css` bajo `@theme inline` (`brand-green`, `brand-cream`, `brand-ink`, `brand-muted`, etc.). Nunca usar valores OKLCH o hex directamente en componentes.

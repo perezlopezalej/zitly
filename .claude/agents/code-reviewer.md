@@ -56,6 +56,7 @@ Tu única función es leer el código y producir un informe estructurado.
 
 - No hay N+1 queries (loop con query dentro); los datos relacionados se traen en una sola consulta con joins o `select('*, relation(*)')`.
 - Los Server Components no hacen fetches que podrían estar en caché o en un layout superior.
+- En Next.js 16 el caché está **invertido**: nada se cachea por defecto. Para cachear, el componente o función debe tener `'use cache'` explícito. No asumir que las fetches están cacheadas sin esa directiva.
 - Las imágenes usan `next/image`; los links usan `next/link`.
 - Los Client Components (`'use client'`) están al nivel más bajo posible del árbol.
 - No hay `useEffect` que podría reemplazarse con derivación de estado o Server Component.
@@ -69,11 +70,32 @@ Tu única función es leer el código y producir un informe estructurado.
 ### 5. Convenciones del proyecto
 
 - Componentes en PascalCase, funciones y variables en camelCase.
-- Sin `any` explícito; los tipos se definen en `src/types/` o se derivan con `Pick`/`Omit`.
+- Sin `any` explícito; los tipos de dominio vienen de `src/types/index.ts` (`ActionResult`, `Employee`, `Service`, `Booking`, `BookingStatus`).
 - Los estados de carga y error tienen UI visible (no se silencian con `catch (e) {}`).
-- Los clientes de Supabase se importan desde `src/lib/supabase/`, no se instancian ad-hoc.
-- Las constantes de dominio (estados de reserva, roles) vienen de `src/lib/constants/`.
+- El cliente Supabase se crea con `createSupabaseServerClient()` desde `src/lib/supabase` — no instanciar ad-hoc.
 - En App Router: sin imports de `React` explícitos, sin mezclar Server/Client en el mismo archivo.
+- Los mensajes de error de DB al usuario son siempre genéricos en español — nunca `error.message` de Supabase al cliente.
+
+### 6. Patrones fijos del proyecto (no son bugs)
+
+**Bloque try/catch en Server Actions** — este patrón se repite en todos los actions y es correcto:
+```ts
+try {
+  ;({ supabase, businessId } = await getBusiness())
+} catch (e) {
+  if (isRedirectError(e)) throw e   // crítico: deja pasar el redirect de auth
+  return { error: 'Error de conexión. Inténtalo de nuevo.' }
+}
+```
+`getBusiness()` en `src/lib/actions.ts` llama `supabase.auth.getUser()` y hace `redirect('/auth/login')` si no hay sesión. El re-throw de `isRedirectError` es obligatorio.
+
+**Validación de inputs** — se usa `validateLength(value, min, max)` de `src/lib/validation.ts`. No es un esquema Zod — es una función utilitaria propia.
+
+**`proxy.ts` no `middleware.ts`** — Next.js 16 usa `src/proxy.ts` como middleware. El export se llama `proxy`, no `middleware`. El archivo ya usa `getUser()` (validación server-side), no `getSession()`.
+
+**APIs de Request son async en Next.js 16** — `cookies()`, `headers()`, `params` y `searchParams` deben ser `await`ados. Accederlos síncronamente es un error de compilación en Next.js 16.
+
+**Tipos de `useRef` en React 19** — `useRef<T>(null)` devuelve `RefObject<T | null>`. Las anotaciones de retorno deben incluir `| null`.
 
 ---
 
