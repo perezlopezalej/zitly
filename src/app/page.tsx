@@ -7,7 +7,6 @@ import { HowItWorksSection } from '@/components/landing/how-it-works-section'
 import { MetricsSection } from '@/components/landing/metrics-section'
 import { IntegrationsSection } from '@/components/landing/integrations-section'
 import { SecuritySection } from '@/components/landing/security-section'
-import { TestimonialsSection } from '@/components/landing/testimonials-section'
 import { PricingSection } from '@/components/landing/pricing-section'
 import { CtaSection } from '@/components/landing/cta-section'
 import { FooterSection } from '@/components/landing/footer-section'
@@ -26,7 +25,6 @@ export default async function LandingPage() {
       <MetricsSection />
       <IntegrationsSection />
       <SecuritySection />
-      <TestimonialsSection />
       <PricingSection />
       <CtaSection />
       <FooterSection />

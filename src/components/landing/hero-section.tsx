@@ -125,34 +125,6 @@ export function HeroSection() {
           </div>
         </div>
       </div>
-
-      {/* Stats marquee */}
-      <div
-        className={`absolute bottom-10 left-0 right-0 transition-all duration-700 delay-500 ${
-          isVisible ? "opacity-100" : "opacity-0"
-        }`}
-      >
-        <div className="flex gap-16 marquee whitespace-nowrap">
-          {[...Array(2)].map((_, i) => (
-            <div key={i} className="flex gap-16">
-              {[
-                { value: "2 min", label: "configuración", sector: "RÁPIDO" },
-                { value: "0€", label: "para empezar", sector: "GRATIS" },
-                { value: "24/7", label: "reservas online", sector: "SIEMPRE" },
-                { value: "100%", label: "sin llamadas", sector: "AUTOMÁTICO" },
-              ].map((stat) => (
-                <div key={`${stat.sector}-${i}`} className="flex items-baseline gap-4">
-                  <span className="text-4xl lg:text-5xl font-display">{stat.value}</span>
-                  <span className="text-sm text-muted-foreground">
-                    {stat.label}
-                    <span className="block font-mono text-xs mt-1">{stat.sector}</span>
-                  </span>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
     </section>
   );
 }
