@@ -133,12 +133,12 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
               name="name"
               required
               placeholder="Nombre del empleado"
-              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-base text-brand-ink placeholder-brand-muted focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
+              className="flex-1 border border-gray-300 rounded-lg px-3 py-3 text-base text-brand-ink placeholder-brand-muted focus:outline-none focus:border-brand-green focus:ring-1 focus:ring-brand-green"
             />
             <button
               type="submit"
               disabled={isPending}
-              className="bg-brand-green hover:bg-brand-green-dark text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors disabled:opacity-50 shrink-0"
+              className="bg-brand-green hover:bg-brand-green-dark text-white text-sm font-medium px-4 py-3 rounded-lg transition-colors disabled:opacity-50 shrink-0"
             >
               {isPending ? 'Añadiendo…' : 'Añadir'}
             </button>
@@ -166,7 +166,7 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
                       value={editingName}
                       onChange={(e) => setEditingName(e.target.value)}
                       onKeyDown={(e) => handleEditKeyDown(e, employee.id)}
-                      className="flex-1 border border-brand-green rounded-lg px-3 py-1.5 text-base text-brand-ink focus:outline-none focus:ring-1 focus:ring-brand-green"
+                      className="flex-1 border border-brand-green rounded-lg px-3 py-3 text-base text-brand-ink focus:outline-none focus:ring-1 focus:ring-brand-green"
                     />
                     <button
                       onClick={() => handleSave(employee.id)}
@@ -199,14 +199,14 @@ export default function EmployeesClient({ employees }: { employees: Employee[] }
                       <div className="flex items-center gap-2 shrink-0">
                         <button
                           onClick={cancelDelete}
-                          className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+                          className="px-3 py-2.5 text-xs font-medium rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
                         >
                           Cancelar
                         </button>
                         <button
                           onClick={() => handleDelete(employee.id)}
                           disabled={isPending}
-                          className="px-3 py-1.5 text-xs font-medium rounded-lg bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors disabled:opacity-40"
+                          className="px-3 py-2.5 text-xs font-medium rounded-lg bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 transition-colors disabled:opacity-40"
                         >
                           Eliminar
                         </button>

@@ -101,72 +101,77 @@ export function Navigation() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2"
-            aria-label="Toggle menu"
+            className="md:hidden w-12 h-12 flex items-center justify-center rounded-full hover:bg-foreground/5 transition-colors"
+            aria-label="Abrir menú"
           >
-            {isMobileMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
+            <Menu className="w-5 h-5" />
           </button>
         </div>
       </nav>
 
       {/* Mobile Menu - Full Screen Overlay */}
       <div
-        className={`md:hidden fixed inset-0 bg-background z-40 transition-all duration-500 ${
+        className={`md:hidden fixed inset-0 bg-background z-40 flex flex-col transition-all duration-300 ${
           isMobileMenuOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
         }`}
-        style={{ top: 0 }}
       >
-        <div className="flex flex-col h-full px-8 pt-28 pb-8">
-          {/* Navigation Links */}
-          <div className="flex-1 flex flex-col justify-center gap-8">
-            {navLinks.map((link, i) => (
-              <a
-                key={link.name}
-                href={link.href}
-                aria-current={link.href === `#${activeSection}` ? 'true' : undefined}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`text-5xl font-display text-foreground hover:text-muted-foreground transition-all duration-500 ${
-                  isMobileMenuOpen
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-4"
-                }`}
-                style={{ transitionDelay: isMobileMenuOpen ? `${i * 75}ms` : "0ms" }}
-              >
-                {link.name}
-              </a>
-            ))}
-          </div>
-
-          {/* Bottom CTAs */}
-          <div
-            className={`flex gap-4 pt-8 border-t border-foreground/10 transition-all duration-500 ${
-              isMobileMenuOpen
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-4"
-            }`}
-            style={{ transitionDelay: isMobileMenuOpen ? "300ms" : "0ms" }}
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 h-16 border-b border-foreground/10 shrink-0">
+          <span className="font-display text-xl">Zitly</span>
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-foreground/5 transition-colors"
+            aria-label="Cerrar menú"
           >
-            <Link
-              href="/auth/login"
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Nav links */}
+        <nav className="flex-1 flex flex-col px-6">
+          {navLinks.map((link, i) => (
+            <a
+              key={link.name}
+              href={link.href}
+              aria-current={link.href === `#${activeSection}` ? 'true' : undefined}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="flex-1 rounded-full h-14 text-base border border-foreground/20 hover:bg-foreground/5 inline-flex items-center justify-center transition-colors"
+              className={`flex-1 flex items-center text-2xl font-display border-b border-foreground/8 transition-all duration-300 ${
+                link.href === `#${activeSection}`
+                  ? "text-primary"
+                  : "text-foreground/75 hover:text-foreground"
+              } ${
+                isMobileMenuOpen
+                  ? "opacity-100 translate-x-0"
+                  : "opacity-0 -translate-x-3"
+              }`}
+              style={{ transitionDelay: isMobileMenuOpen ? `${i * 60}ms` : "0ms" }}
             >
-              Iniciar sesión
-            </Link>
-            <Link
-              href="/auth/register"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="flex-1 bg-primary text-primary-foreground rounded-full h-14 text-base inline-flex items-center justify-center hover:bg-primary/90 transition-colors"
-            >
-              Empieza gratis
-            </Link>
-          </div>
+              {link.name}
+            </a>
+          ))}
+        </nav>
+
+        {/* Bottom CTAs */}
+        <div
+          className="shrink-0 px-6 pt-4 pb-6 flex flex-col gap-3 border-t border-foreground/10"
+          style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}
+        >
+          <Link
+            href="/auth/register"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="w-full bg-primary text-primary-foreground rounded-full h-14 text-base font-medium inline-flex items-center justify-center hover:bg-primary/90 transition-colors"
+          >
+            Empieza gratis
+          </Link>
+          <Link
+            href="/auth/login"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="w-full h-12 text-sm text-foreground/60 hover:text-foreground inline-flex items-center justify-center transition-colors"
+          >
+            Iniciar sesión
+          </Link>
         </div>
       </div>
     </header>

@@ -107,7 +107,7 @@ export function HowItWorksSection() {
               >
                 <div className="flex items-start gap-6">
                   <span className="font-display text-3xl text-foreground/30">{step.number}</span>
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <h3 className="text-2xl lg:text-3xl font-display mb-3 group-hover:translate-x-2 transition-transform duration-300">
                       {step.title}
                     </h3>
@@ -139,7 +139,7 @@ export function HowItWorksSection() {
               </div>
 
               <div className="p-8 font-mono text-sm min-h-70">
-                <pre className="text-foreground/80">
+                <pre className="text-foreground/80 whitespace-pre-wrap break-words">
                   {steps[activeStep].code.split("\n").map((line, lineIndex) => (
                     <div
                       key={`${activeStep}-${lineIndex}`}

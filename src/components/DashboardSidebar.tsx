@@ -87,7 +87,7 @@ export default function DashboardSidebar() {
                 }`}
               >
                 <Icon className="w-6 h-6 shrink-0" />
-                <span className="text-[10px] font-medium leading-none">{label}</span>
+                <span className="text-xs font-medium leading-none">{label}</span>
                 {active && (
                   <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-brand-green rounded-full" />
                 )}
