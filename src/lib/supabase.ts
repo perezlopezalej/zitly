@@ -1,4 +1,5 @@
 import { createBrowserClient, createServerClient } from '@supabase/ssr'
+import { createClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 
 // M4: fail fast with a clear message if env vars are missing
@@ -13,6 +14,14 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
 
 export function createSupabaseBrowserClient() {
   return createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+}
+
+export function createSupabaseAdminClient() {
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? ''
+  if (!serviceRoleKey) throw new Error('Falta SUPABASE_SERVICE_ROLE_KEY')
+  return createClient(SUPABASE_URL, serviceRoleKey, {
+    auth: { persistSession: false },
+  })
 }
 
 export async function createSupabaseServerClient() {

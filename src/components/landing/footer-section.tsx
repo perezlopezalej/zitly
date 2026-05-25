@@ -12,11 +12,11 @@ const footerLinks = {
   ],
   Empresa: [
     { name: "Sobre nosotros", href: "#" },
-    { name: "Contacto", href: "#" },
+    { name: "Contacto", href: "/contacto" },
   ],
   Legal: [
-    { name: "Privacidad", href: "#" },
-    { name: "Términos", href: "#" },
+    { name: "Privacidad", href: "/privacidad" },
+    { name: "Términos", href: "/terminos" },
     { name: "Cookies", href: "#" },
   ],
 };
@@ -105,13 +105,20 @@ export function FooterSection() {
                         <span className="text-sm text-muted-foreground opacity-50 cursor-default">
                           {link.name}
                         </span>
-                      ) : (
+                      ) : link.href.startsWith('#') ? (
                         <a
                           href={link.href}
                           className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                         >
                           {link.name}
                         </a>
+                      ) : (
+                        <Link
+                          href={link.href}
+                          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          {link.name}
+                        </Link>
                       )}
                     </li>
                   ))}

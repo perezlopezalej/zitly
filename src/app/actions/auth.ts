@@ -2,6 +2,7 @@
 
 import { createSupabaseServerClient } from '@/lib/supabase'
 import { redirect } from 'next/navigation'
+import { sendWelcomeEmail } from '@/lib/email'
 
 export type AuthState = { error?: string } | undefined
 
@@ -79,6 +80,8 @@ export async function registerAction(
     await supabase.auth.signOut()
     return { error: 'Error al crear el negocio. Inténtalo de nuevo.' }
   }
+
+  await sendWelcomeEmail(email, businessName.trim()).catch((err) => console.error('[resend]', err))
 
   redirect('/dashboard')
 }

@@ -1,10 +1,11 @@
 'use server'
 
-import { createSupabaseServerClient } from '@/lib/supabase'
+import { createSupabaseAdminClient } from '@/lib/supabase'
 import { getBusiness } from '@/lib/actions'
 import { validateLength } from '@/lib/validation'
 import { todayISO } from '@/lib/format'
 import { revalidatePath } from 'next/cache'
+import { sendBookingConfirmationEmail } from '@/lib/email'
 import { BOOKING_HOURS_START, BOOKING_HOURS_END, BOOKING_SLOT_INTERVAL, ALLOWED_STATUS_TRANSITIONS } from '@/lib/booking'
 import type { AllowedStatus } from '@/lib/booking'
 import { isRedirectError } from 'next/dist/client/components/redirect-error'
@@ -73,7 +74,7 @@ export async function createBookingAction(
     return { error: 'La fecha no puede ser superior a un año desde hoy' }
   }
 
-  const supabase = await createSupabaseServerClient()
+  const supabase = createSupabaseAdminClient()
 
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
 
@@ -102,7 +103,7 @@ export async function createBookingAction(
   // Verify service belongs to the business (prevents cross-business injection)
   const { data: service } = await supabase
     .from('services')
-    .select('id')
+    .select('id, name')
     .eq('id', input.serviceId)
     .eq('business_id', input.businessId)
     .single()
@@ -110,15 +111,17 @@ export async function createBookingAction(
   if (!service) return { error: 'Servicio no válido para este negocio' }
 
   // Verify employee belongs to the business when provided
+  let employeeName: string | null = null
   if (input.employeeId) {
     const { data: employee } = await supabase
       .from('employees')
-      .select('id')
+      .select('id, name')
       .eq('id', input.employeeId)
       .eq('business_id', input.businessId)
       .single()
 
     if (!employee) return { error: 'Empleado no válido para este negocio' }
+    employeeName = (employee as { id: string; name: string }).name
   }
 
   const { data, error } = await supabase
@@ -138,6 +141,22 @@ export async function createBookingAction(
     .single()
 
   if (error) return { error: 'No se pudo crear la reserva. Inténtalo de nuevo.' }
+
+  const { data: business } = await supabase
+    .from('businesses')
+    .select('name')
+    .eq('id', input.businessId)
+    .single()
+
+  void sendBookingConfirmationEmail(input.clientEmail, {
+    clientName: input.clientName,
+    businessName: business?.name ?? '',
+    serviceName: (service as { id: string; name: string }).name,
+    date: input.date,
+    time: input.time,
+    employeeName,
+  }).catch(() => {})
+
   return { booking: data as CreatedBooking }
 }
 
