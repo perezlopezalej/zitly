@@ -44,6 +44,7 @@ export async function registerAction(
   })
 
   if (error) {
+    console.error('[register] signUp error:', error.status, error.message)
     // Coupled to Supabase error message string (tested against @supabase/ssr@0.10.3).
     // If upgrading Supabase, verify this string hasn't changed before deploying.
     if (error.message.includes('already registered')) {
