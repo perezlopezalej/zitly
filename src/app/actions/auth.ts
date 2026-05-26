@@ -148,9 +148,13 @@ export async function resetPasswordAction(
   const supabase = await createSupabaseServerClient()
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 
-  await supabase.auth.resetPasswordForEmail(email, {
+  const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${appUrl}/auth/reset-password/update`,
   })
+
+  if (resetError) {
+    console.error('[resetPassword] error:', resetError.status, resetError.message)
+  }
 
   // Always show success to prevent email enumeration
   return {
