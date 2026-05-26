@@ -1,12 +1,10 @@
-export type BookingEmailProps = {
+export type ReminderEmailProps = {
   clientName: string
   businessName: string
   serviceName: string
   date: string       // ISO: YYYY-MM-DD
   time: string       // HH:MM
   employeeName: string | null
-  businessPhone: string | null
-  businessContactEmail: string | null
 }
 
 function formatDate(iso: string): string {
@@ -32,7 +30,7 @@ function Row({ label, value }: { label: string; value: string }) {
   )
 }
 
-export function BookingEmail({ clientName, businessName, serviceName, date, time, employeeName, businessPhone, businessContactEmail }: BookingEmailProps) {
+export function ReminderEmail({ clientName, businessName, serviceName, date, time, employeeName }: ReminderEmailProps) {
   return (
     <html lang="es">
       <head>
@@ -46,30 +44,27 @@ export function BookingEmail({ clientName, businessName, serviceName, date, time
               <td align="center">
                 <table width="100%" cellPadding={0} cellSpacing={0} style={{ maxWidth: '560px', backgroundColor: '#ffffff', borderRadius: '8px', overflow: 'hidden', border: '1px solid #E5E2DC' }}>
                   <tbody>
-                    {/* Header */}
                     <tr>
                       <td style={{ backgroundColor: '#2C5F3F', padding: '32px 40px' }}>
                         <p style={{ margin: '0 0 4px', fontSize: '24px', fontFamily: 'Georgia, serif', color: '#ffffff', letterSpacing: '-0.5px' }}>
                           Zitly
                         </p>
                         <p style={{ margin: 0, fontSize: '13px', color: 'rgba(255,255,255,0.65)' }}>
-                          Confirmación de reserva
+                          Recordatorio de cita
                         </p>
                       </td>
                     </tr>
 
-                    {/* Body */}
                     <tr>
                       <td style={{ padding: '40px 40px 32px' }}>
                         <h1 style={{ margin: '0 0 8px', fontSize: '26px', fontFamily: 'Georgia, serif', color: '#16130E', lineHeight: '1.2', letterSpacing: '-0.5px' }}>
-                          Hemos recibido tu reserva
+                          Tu cita es mañana
                         </h1>
                         <p style={{ margin: '0 0 32px', fontSize: '15px', color: '#5C6E62', lineHeight: '1.6' }}>
-                          Hola <strong style={{ color: '#16130E' }}>{clientName}</strong>, hemos recibido tu solicitud de reserva en{' '}
-                          <strong style={{ color: '#16130E' }}>{businessName}</strong>. Recibirás otro email cuando el negocio confirme tu cita.
+                          Hola <strong style={{ color: '#16130E' }}>{clientName}</strong>, te recordamos que tienes una cita confirmada en{' '}
+                          <strong style={{ color: '#16130E' }}>{businessName}</strong> mañana.
                         </p>
 
-                        {/* Details table */}
                         <table width="100%" cellPadding={0} cellSpacing={0} style={{ marginBottom: '32px' }}>
                           <tbody>
                             <Row label="Servicio" value={serviceName} />
@@ -80,22 +75,17 @@ export function BookingEmail({ clientName, businessName, serviceName, date, time
                         </table>
 
                         <p style={{ margin: 0, fontSize: '14px', color: '#9CA89E', lineHeight: '1.6', backgroundColor: '#F6F4EF', borderRadius: '6px', padding: '14px 16px' }}>
-                          Si necesitas cancelar o cambiar la cita, contacta con {businessName}
-                          {businessPhone ? <span> · Tel: <a href={`tel:${businessPhone}`} style={{ color: '#2C5F3F', textDecoration: 'none' }}>{businessPhone}</a></span> : null}
-                          {businessContactEmail ? <span> · <a href={`mailto:${businessContactEmail}`} style={{ color: '#2C5F3F', textDecoration: 'none' }}>{businessContactEmail}</a></span> : null}
-                          {!businessPhone && !businessContactEmail ? '.' : '.'}
+                          Si necesitas cancelar o cambiar la cita, contacta directamente con {businessName}.
                         </p>
                       </td>
                     </tr>
 
-                    {/* Divider */}
                     <tr>
                       <td style={{ padding: '0 40px' }}>
                         <hr style={{ border: 'none', borderTop: '1px solid #E5E2DC', margin: 0 }} />
                       </td>
                     </tr>
 
-                    {/* Footer */}
                     <tr>
                       <td style={{ padding: '24px 40px 32px' }}>
                         <p style={{ margin: 0, fontSize: '12px', color: '#9CA89E', lineHeight: '1.6' }}>
