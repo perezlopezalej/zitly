@@ -15,6 +15,14 @@ export default function RegisterForm() {
   )
   const [captchaToken, setCaptchaToken] = useState<string | null>(null)
 
+  if (state?.success) {
+    return (
+      <div className="rounded-md bg-green-50 border border-green-200 p-4">
+        <p className="text-sm text-green-700">{state.success}</p>
+      </div>
+    )
+  }
+
   return (
     <form action={action} className="space-y-5">
       <input type="hidden" name="captchaToken" value={captchaToken ?? ''} />

@@ -63,7 +63,7 @@ export async function registerAction(
   // possibly user: null). Check session first so the user sees the correct message.
   if (!data.session) {
     return {
-      error:
+      success:
         'Revisa tu bandeja de entrada y confirma tu email para continuar.',
     }
   }
