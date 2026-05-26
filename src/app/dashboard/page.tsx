@@ -16,6 +16,7 @@ export default async function DashboardPage() {
     { count: monthCount },
     { data: upcomingRaw },
     { count: servicesCount },
+    { data: revenueRaw },
   ] = await Promise.all([
     supabase
       .from('bookings')
@@ -47,7 +48,19 @@ export default async function DashboardPage() {
       .from('services')
       .select('*', { count: 'exact', head: true })
       .eq('business_id', businessId),
+    supabase
+      .from('bookings')
+      .select('services(price)')
+      .eq('business_id', businessId)
+      .gte('date', monthStart)
+      .lte('date', monthEnd)
+      .in('status', ['confirmed', 'completed']),
   ])
+
+  const monthRevenue = (revenueRaw ?? []).reduce((sum, b) => {
+    const price = (b.services as { price: number } | null)?.price ?? 0
+    return sum + price
+  }, 0)
 
   const upcoming = (upcomingRaw ?? []) as unknown as Pick<Booking, 'id' | 'time' | 'client_name' | 'service_name' | 'services'>[]
 
@@ -101,7 +114,7 @@ export default async function DashboardPage() {
       )}
 
       {/* Stat cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard
           label="Reservas hoy"
           value={todayCount ?? 0}
@@ -109,13 +122,18 @@ export default async function DashboardPage() {
           accent
         />
         <StatCard
-          label="Pendientes de confirmar"
+          label="Pendientes"
           value={pendingCount ?? 0}
           href="/dashboard/reservations"
         />
         <StatCard
           label="Total del mes"
           value={monthCount ?? 0}
+          href="/dashboard/reservations"
+        />
+        <StatCard
+          label="Ingresos del mes"
+          value={`${monthRevenue.toFixed(2)} €`}
           href="/dashboard/reservations"
         />
       </div>
@@ -195,7 +213,7 @@ function StatCard({
   accent,
 }: {
   label: string
-  value: number
+  value: number | string
   href: string
   accent?: boolean
 }) {
