@@ -135,6 +135,50 @@ export async function logoutAction() {
   redirect('/')
 }
 
+export async function changePasswordAction(
+  state: AuthState,
+  formData: FormData,
+): Promise<AuthState> {
+  const currentPassword = formData.get('currentPassword') as string
+  const newPassword     = formData.get('newPassword') as string
+  const confirmPassword = formData.get('confirmPassword') as string
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    return { error: 'Todos los campos son obligatorios' }
+  }
+  if (newPassword !== confirmPassword) {
+    return { error: 'Las contraseñas nuevas no coinciden' }
+  }
+  if (newPassword.length < 8) {
+    return { error: 'La contraseña debe tener al menos 8 caracteres' }
+  }
+  if (!/[A-Z]/.test(newPassword)) {
+    return { error: 'La contraseña debe contener al menos una letra mayúscula' }
+  }
+  if (!/[0-9]/.test(newPassword)) {
+    return { error: 'La contraseña debe contener al menos un número' }
+  }
+
+  const supabase = await createSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user?.email) redirect('/auth/login')
+
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: user.email,
+    password: currentPassword,
+  })
+  if (signInError) {
+    return { error: 'La contraseña actual es incorrecta' }
+  }
+
+  const { error: updateError } = await supabase.auth.updateUser({ password: newPassword })
+  if (updateError) {
+    return { error: 'Error al actualizar la contraseña. Inténtalo de nuevo.' }
+  }
+
+  return { success: 'Contraseña actualizada correctamente' }
+}
+
 export async function resetPasswordAction(
   state: AuthState,
   formData: FormData,

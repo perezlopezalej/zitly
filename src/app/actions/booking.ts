@@ -6,7 +6,7 @@ import { validateLength } from '@/lib/validation'
 import { todayISO } from '@/lib/format'
 import { revalidatePath } from 'next/cache'
 import { sendBookingConfirmationEmail } from '@/lib/email'
-import { BOOKING_HOURS_START, BOOKING_HOURS_END, BOOKING_SLOT_INTERVAL, ALLOWED_STATUS_TRANSITIONS } from '@/lib/booking'
+import { BOOKING_SLOT_INTERVAL, ALLOWED_STATUS_TRANSITIONS, parseBookingHours } from '@/lib/booking'
 import type { AllowedStatus } from '@/lib/booking'
 import { isRedirectError } from 'next/dist/client/components/redirect-error'
 
@@ -57,16 +57,6 @@ export async function createBookingAction(
     return { error: 'Hora no válida' }
   }
 
-  // Validate time is within accepted business hours (matches client-generated slots)
-  const [h, m] = input.time.split(':').map(Number)
-  const totalMinutes = h * 60 + m
-  if (totalMinutes < BOOKING_HOURS_START * 60 || totalMinutes >= BOOKING_HOURS_END * 60) {
-    const lastSlotH = Math.floor((BOOKING_HOURS_END * 60 - BOOKING_SLOT_INTERVAL) / 60)
-    const lastSlotM = (BOOKING_HOURS_END * 60 - BOOKING_SLOT_INTERVAL) % 60
-    const lastSlot = `${String(lastSlotH).padStart(2, '0')}:${String(lastSlotM).padStart(2, '0')}`
-    return { error: `La hora debe estar entre las 09:00 y las ${lastSlot}` }
-  }
-
   // Reject dates more than one year in the future
   const maxDate = new Date()
   maxDate.setFullYear(maxDate.getFullYear() + 1)
@@ -75,6 +65,28 @@ export async function createBookingAction(
   }
 
   const supabase = createSupabaseAdminClient()
+
+  // Fetch business early to get configurable hours (also used for email later)
+  const { data: businessData } = await supabase
+    .from('businesses')
+    .select('name, opening_time, closing_time')
+    .eq('id', input.businessId)
+    .single()
+
+  if (!businessData) return { error: 'Negocio no válido' }
+
+  const biz = businessData as { name: string; opening_time: string | null; closing_time: string | null }
+  const { start: hoursStart, end: hoursEnd } = parseBookingHours(biz.opening_time, biz.closing_time)
+
+  const [h, m] = input.time.split(':').map(Number)
+  const totalMinutes = h * 60 + m
+  if (totalMinutes < hoursStart * 60 || totalMinutes >= hoursEnd * 60) {
+    const lastSlotH = Math.floor((hoursEnd * 60 - BOOKING_SLOT_INTERVAL) / 60)
+    const lastSlotM = (hoursEnd * 60 - BOOKING_SLOT_INTERVAL) % 60
+    const lastSlot = `${String(lastSlotH).padStart(2, '0')}:${String(lastSlotM).padStart(2, '0')}`
+    const openStr = `${String(hoursStart).padStart(2, '0')}:00`
+    return { error: `La hora debe estar entre las ${openStr} y las ${lastSlot}` }
+  }
 
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
 
@@ -143,15 +155,9 @@ export async function createBookingAction(
 
   if (error) return { error: 'No se pudo crear la reserva. Inténtalo de nuevo.' }
 
-  const { data: business } = await supabase
-    .from('businesses')
-    .select('name')
-    .eq('id', input.businessId)
-    .single()
-
   void sendBookingConfirmationEmail(input.clientEmail, {
     clientName: input.clientName,
-    businessName: business?.name ?? '',
+    businessName: biz.name,
     serviceName: (service as { id: string; name: string }).name,
     date: input.date,
     time: input.time,

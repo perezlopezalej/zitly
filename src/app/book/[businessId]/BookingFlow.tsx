@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { createBookingAction } from '@/app/actions/booking'
 import type { CreatedBooking } from '@/app/actions/booking'
 import type { Service, Employee } from '@/types'
-import { BOOKING_HOURS_START, BOOKING_HOURS_END, BOOKING_SLOT_INTERVAL } from '@/lib/booking'
+import { BOOKING_SLOT_INTERVAL, parseBookingHours } from '@/lib/booking'
 import { todayISO } from '@/lib/format'
 import { playfair } from '@/lib/fonts'
 
@@ -13,14 +13,16 @@ type Business = {
   id: string
   name: string
   description: string | null
+  opening_time: string | null
+  closing_time: string | null
 }
 
 type Step = 'service' | 'employee' | 'datetime' | 'details' | 'confirmed'
 
-function generateTimeSlots(durationMinutes: number): string[] {
+function generateTimeSlots(durationMinutes: number, startHour: number, endHour: number): string[] {
   const slots: string[] = []
-  const start = BOOKING_HOURS_START * 60
-  const end = BOOKING_HOURS_END * 60
+  const start = startHour * 60
+  const end = endHour * 60
   for (let m = start; m + durationMinutes <= end; m += BOOKING_SLOT_INTERVAL) {
     const h = Math.floor(m / 60)
     const min = m % 60
@@ -79,8 +81,12 @@ export default function BookingFlow({ business, services, employees }: Props) {
   const [booking, setBooking] = useState<CreatedBooking | null>(null)
   const [isPending, startTransition] = useTransition()
 
+  const { start: hoursStart, end: hoursEnd } = parseBookingHours(
+    business.opening_time,
+    business.closing_time,
+  )
   const timeSlots = selectedService
-    ? generateTimeSlots(selectedService.duration_minutes)
+    ? generateTimeSlots(selectedService.duration_minutes, hoursStart, hoursEnd)
     : []
 
   const currentStep = stepNumber(step, hasEmployees)

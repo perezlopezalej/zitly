@@ -16,7 +16,7 @@ export default async function BookPage({ params }: Props) {
     await Promise.all([
       supabase
         .from('businesses')
-        .select('id, name, description')
+        .select('id, name, description, opening_time, closing_time')
         .eq('id', businessId)
         .single(),
       supabase
@@ -35,7 +35,7 @@ export default async function BookPage({ params }: Props) {
 
   return (
     <BookingFlow
-      business={business as { id: string; name: string; description: string | null }}
+      business={business as { id: string; name: string; description: string | null; opening_time: string | null; closing_time: string | null }}
       services={(services ?? []) as Service[]}
       employees={(employees ?? []) as Employee[]}
     />
