@@ -1,9 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { useIntersectionObserver } from "@/hooks/useIntersectionObserver";
-import { Network3D } from "./network-3d";
 import { CtaButtonGroup } from "./cta-button-group";
+
+const Network3D = dynamic(
+  () => import("./network-3d").then((m) => ({ default: m.Network3D })),
+  { ssr: false },
+);
 
 export function CtaSection() {
   const [sectionRef, isVisible] = useIntersectionObserver(0.2);

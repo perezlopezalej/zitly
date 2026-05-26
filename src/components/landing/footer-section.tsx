@@ -8,7 +8,6 @@ const footerLinks = {
     { name: "Funciones", href: "#features" },
     { name: "Cómo funciona", href: "#how-it-works" },
     { name: "Precios", href: "#pricing" },
-    { name: "Sectores", href: "#sectors" },
   ],
   Empresa: [
     { name: "Sobre nosotros", href: "/sobre" },
@@ -121,12 +120,7 @@ export function FooterSection() {
           <p className="text-sm text-muted-foreground">
             {CURRENT_YEAR} Zitly. Todos los derechos reservados.
           </p>
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-green-500" />
-              Sistemas operativos
-            </span>
-          </div>
+          <div className="flex items-center gap-4 text-sm text-muted-foreground" />
         </div>
       </div>
     </footer>

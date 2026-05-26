@@ -8,6 +8,8 @@ export function AnimatedTetrahedron() {
   const frameRef = useRef(0);
 
   useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
