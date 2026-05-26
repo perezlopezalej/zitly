@@ -7,13 +7,17 @@
 
 ```ts
 // ✅ CORRECT — params and searchParams must be awaited
-export default async function Page({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
 }
 // ✅ CORRECT — cookies must be awaited
-const cookieStore = await cookies()
+const cookieStore = await cookies();
 // ❌ WRONG — synchronous access (Next.js 14/15 pattern, breaks here)
-const { id } = params
+const { id } = params;
 ```
 
 ## Commands
@@ -44,25 +48,25 @@ Authenticated via `Authorization: Bearer $CRON_SECRET`.
 
 ### Supabase clients — use the right one
 
-| Client | Function | When |
-|--------|----------|------|
-| `createSupabaseBrowserClient()` | Browser | Client components only |
-| `createSupabaseServerClient()` | Server | Server components, Server Actions needing auth |
-| `createSupabaseAdminClient()` | Admin — bypasses RLS | Cron routes, public booking ONLY |
+| Client                          | Function             | When                                           |
+| ------------------------------- | -------------------- | ---------------------------------------------- |
+| `createSupabaseBrowserClient()` | Browser              | Client components only                         |
+| `createSupabaseServerClient()`  | Server               | Server components, Server Actions needing auth |
+| `createSupabaseAdminClient()`   | Admin — bypasses RLS | Cron routes, public booking ONLY               |
 
 ### Server Action pattern — always use this
 
 ```ts
-'use server'
-import { getBusiness } from '@/lib/actions'
-import { isRedirectError } from 'next/dist/client/components/redirect-error'
+"use server";
+import { getBusiness } from "@/lib/actions";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 
-let supabase, businessId
+let supabase, businessId;
 try {
-  ;({ supabase, businessId } = await getBusiness())
+  ({ supabase, businessId } = await getBusiness());
 } catch (e) {
-  if (isRedirectError(e)) throw e
-  return { error: 'Error de conexión. Inténtalo de nuevo.' }
+  if (isRedirectError(e)) throw e;
+  return { error: "Error de conexión. Inténtalo de nuevo." };
 }
 ```
 
@@ -71,6 +75,7 @@ try {
 ### Email
 
 `src/lib/email.ts` — three functions via Resend + react-email:
+
 - `sendWelcomeEmail` — on register
 - `sendBookingConfirmationEmail` — fire-and-forget: `void fn().catch(() => {})`
 - `sendReminderEmail` — called by cron
@@ -93,6 +98,7 @@ before deleting a service or employee.
 ## Security — non-negotiable
 
 **RLS policies — always `auth.uid()`, never `auth.role()`:**
+
 ```sql
 -- ✅ User sees only their own data
 USING (auth.uid() = user_id)
@@ -101,9 +107,10 @@ USING (auth.role() = 'authenticated')
 ```
 
 **Admin client bypasses ALL RLS — only allowed in:**
+
 - `/api/cron/reminders`
 - `createBookingAction` (public booking, no auth context)
-Never in dashboard routes or client components.
+  Never in dashboard routes or client components.
 
 ## Double booking prevention
 
@@ -111,6 +118,15 @@ Never in dashboard routes or client components.
 insert in two separate queries — race condition allows two users to book the same slot.
 The DB enforces a `UNIQUE` constraint on `(employee_id, start_time)` — handle
 the conflict error explicitly, never silently ignore it.
+
+## Tests
+
+Vitest with jsdom. Only pure logic and utilities — async Server Components cannot be unit-tested.
+Test files: `src/lib/__tests__/` and `src/app/actions/__tests__/`
+
+- Always `beforeEach`/`afterEach` for fake timers — never `beforeAll`/`afterAll`
+- Recreate mocks in `beforeEach` — never share mock state between tests
+- Any action touching bookings table MUST have a test for UNIQUE constraint conflict
 
 ## Workflow
 
