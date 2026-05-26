@@ -11,23 +11,14 @@ const footerLinks = {
     { name: "Sectores", href: "#sectors" },
   ],
   Empresa: [
-    { name: "Sobre nosotros", href: "#" },
+    { name: "Sobre nosotros", href: "/sobre" },
     { name: "Contacto", href: "/contacto" },
   ],
   Legal: [
     { name: "Privacidad", href: "/privacidad" },
     { name: "Términos", href: "/terminos" },
-    { name: "Cookies", href: "#" },
   ],
 };
-
-function TwitterIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5" aria-hidden="true">
-      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-    </svg>
-  );
-}
 
 function GitHubIcon() {
   return (
@@ -48,9 +39,8 @@ function LinkedInIcon() {
 const CURRENT_YEAR = new Date().getFullYear();
 
 const socialLinks = [
-  { name: "Twitter / X", href: "#", Icon: TwitterIcon },
-  { name: "GitHub", href: "#", Icon: GitHubIcon },
-  { name: "LinkedIn", href: "#", Icon: LinkedInIcon },
+  { name: "GitHub", href: "https://github.com/perezlopezalej", Icon: GitHubIcon, color: "#24292F" },
+  { name: "LinkedIn", href: "https://www.linkedin.com/in/alejandro-alejandro-perez-dev/", Icon: LinkedInIcon, color: "#0A66C2" },
 ];
 
 export function FooterSection() {
@@ -76,17 +66,15 @@ export function FooterSection() {
               </p>
 
               <div className="flex gap-4">
-                {socialLinks.map(({ name, href, Icon }) => (
+                {socialLinks.map(({ name, href, Icon, color }) => (
                   <a
                     key={name}
                     href={href}
                     aria-label={name}
-                    aria-disabled={href === "#" ? "true" : undefined}
-                    className={`w-9 h-9 flex items-center justify-center border border-foreground/10 text-foreground/70 transition-colors ${
-                      href === "#"
-                        ? "pointer-events-none opacity-50 cursor-default"
-                        : "hover:border-foreground/30 hover:text-foreground"
-                    }`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-9 h-9 flex items-center justify-center border border-foreground/10 transition-colors hover:border-foreground/30"
+                    style={{ color }}
                   >
                     <Icon />
                   </a>
