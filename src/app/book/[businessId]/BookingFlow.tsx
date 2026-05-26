@@ -74,6 +74,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
   const [selectedTime, setSelectedTime] = useState('')
   const [clientName, setClientName] = useState('')
   const [clientEmail, setClientEmail] = useState('')
+  const [clientPhone, setClientPhone] = useState('')
   const [error, setError] = useState('')
   const [booking, setBooking] = useState<CreatedBooking | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -154,8 +155,11 @@ export default function BookingFlow({ business, services, employees }: Props) {
             <Row label="Hora" value={booking.time.slice(0, 5)} />
           </div>
 
+          <p className="text-sm text-brand-muted mb-1">
+            Te avisaremos por email cuando el negocio confirme tu cita.
+          </p>
           <p className="text-xs text-gray-400 mb-6">
-            Estado: pendiente de confirmación · {clientEmail}
+            {clientEmail}
           </p>
 
           <div className="flex flex-col items-center gap-3">
@@ -168,6 +172,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
                 setSelectedTime('')
                 setClientName('')
                 setClientEmail('')
+                setClientPhone('')
                 setBooking(null)
                 setError('')
               }}
@@ -325,7 +330,7 @@ export default function BookingFlow({ business, services, employees }: Props) {
                         key={slot}
                         type="button"
                         onClick={() => setSelectedTime(slot)}
-                        className={`py-2 text-sm rounded-lg border transition-colors ${
+                        className={`py-3 min-h-11 text-sm rounded-lg border transition-colors ${
                           selectedTime === slot
                             ? 'bg-brand-green text-white border-brand-green'
                             : 'bg-white text-gray-700 border-gray-200 hover:border-brand-green'
@@ -378,6 +383,21 @@ export default function BookingFlow({ business, services, employees }: Props) {
                 />
               </div>
               <div>
+                <label htmlFor="client-phone" className="block text-sm font-medium text-gray-700 mb-1">
+                  Teléfono{' '}
+                  <span className="text-xs text-gray-400 font-normal">(opcional)</span>
+                </label>
+                <input
+                  id="client-phone"
+                  type="tel"
+                  value={clientPhone}
+                  onChange={(e) => setClientPhone(e.target.value)}
+                  placeholder="+34 600 000 000"
+                  autoComplete="tel"
+                  className="block w-full rounded-md border border-brand-border px-3 py-2 text-base text-brand-ink placeholder-brand-muted focus:border-brand-green focus:ring-1 focus:ring-brand-green outline-none"
+                />
+              </div>
+              <div>
                 <label htmlFor="client-email" className="block text-sm font-medium text-gray-700 mb-1">
                   Email
                 </label>
@@ -391,6 +411,9 @@ export default function BookingFlow({ business, services, employees }: Props) {
                   autoComplete="email"
                   className="block w-full rounded-md border border-brand-border px-3 py-2 text-base text-brand-ink placeholder-brand-muted focus:border-brand-green focus:ring-1 focus:ring-brand-green outline-none"
                 />
+                <p className="mt-1 text-xs text-brand-muted">
+                  Te enviaremos la confirmación a este email
+                </p>
               </div>
               {error && <p className="text-sm text-red-600">{error}</p>}
             </div>
@@ -461,7 +484,7 @@ function BackLink({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="text-sm text-brand-green hover:underline"
+      className="min-h-11 flex items-center text-sm text-brand-green hover:underline"
     >
       ← Volver
     </button>

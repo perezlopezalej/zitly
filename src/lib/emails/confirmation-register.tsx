@@ -53,6 +53,29 @@ export function RegisterEmail({ businessName }: RegisterEmailProps) {
                             </tr>
                           </tbody>
                         </table>
+
+                        {/* Steps */}
+                        <p style={{ margin: '32px 0 12px', fontSize: '12px', fontWeight: 600, color: '#16130E', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                          Primeros pasos
+                        </p>
+                        {(['Añade tus servicios desde el dashboard.', 'Copia tu enlace y compártelo con tus clientes.', 'Confirma tus primeras reservas.'] as const).map((step, i) => (
+                          <table key={i} cellPadding={0} cellSpacing={0} style={{ marginBottom: '10px', width: '100%' }}>
+                            <tbody>
+                              <tr>
+                                <td style={{ width: '28px', verticalAlign: 'top', paddingTop: '1px' }}>
+                                  <span style={{ display: 'inline-block', width: '20px', height: '20px', borderRadius: '50%', backgroundColor: '#2C5F3F', color: '#fff', fontSize: '11px', fontWeight: 600, textAlign: 'center', lineHeight: '20px' }}>
+                                    {i + 1}
+                                  </span>
+                                </td>
+                                <td style={{ verticalAlign: 'top', paddingTop: '2px' }}>
+                                  <p style={{ margin: 0, fontSize: '14px', color: '#5C6E62', lineHeight: '1.5' }}>
+                                    {step}
+                                  </p>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        ))}
                       </td>
                     </tr>
 

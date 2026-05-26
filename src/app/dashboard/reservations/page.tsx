@@ -91,7 +91,7 @@ export default async function ReservationsPage({ searchParams }: PageProps) {
   let query = supabase
     .from('bookings')
     .select(
-      'id, date, time, status, client_name, client_email, services(name), employees(name)',
+      'id, date, time, status, client_name, client_email, service_name, services(name), employees(name)',
     )
     .eq('business_id', businessId)
 
@@ -194,7 +194,7 @@ export default async function ReservationsPage({ searchParams }: PageProps) {
                   <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600 pt-1">
                     <span>
                       <span className="text-gray-400">Servicio:</span>{' '}
-                      {booking.services?.name ?? '—'}
+                      {booking.service_name ?? booking.services?.name ?? '—'}
                     </span>
                     <span>
                       <span className="text-gray-400">Profesional:</span>{' '}

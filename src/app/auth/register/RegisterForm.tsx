@@ -70,6 +70,26 @@ export default function RegisterForm() {
         />
       </div>
 
+      <div className="flex items-start gap-3">
+        <input
+          id="terms"
+          name="terms"
+          type="checkbox"
+          required
+          className="mt-0.5 h-4 w-4 shrink-0 rounded border-brand-border text-brand-green focus:ring-2 focus:ring-brand-green focus:ring-offset-0 cursor-pointer"
+        />
+        <label htmlFor="terms" className="text-sm text-brand-muted leading-relaxed">
+          Acepto los{' '}
+          <Link href="/terminos" className="text-brand-green hover:underline font-medium">
+            Términos de uso
+          </Link>
+          {' '}y la{' '}
+          <Link href="/privacidad" className="text-brand-green hover:underline font-medium">
+            Política de privacidad
+          </Link>
+        </label>
+      </div>
+
       <button
         type="submit"
         disabled={pending}

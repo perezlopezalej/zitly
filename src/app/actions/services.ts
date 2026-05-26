@@ -91,7 +91,9 @@ export async function deleteServiceAction(id: string): Promise<ActionResult> {
     return { error: 'Error de conexión. Inténtalo de nuevo.' }
   }
 
-  // Block deletion if active bookings reference this service (FK constraint)
+  // Block deletion if any booking (including cancelled) references this service.
+  // Postgres ON DELETE SET NULL fails when service_id is NOT NULL — check first
+  // to surface a clear message instead of a generic DB error.
   const activeCount = await countActiveBookings(supabase, 'service_id', id, businessId)
   if (activeCount > 0) {
     return {
@@ -105,7 +107,10 @@ export async function deleteServiceAction(id: string): Promise<ActionResult> {
     .eq('id', id)
     .eq('business_id', businessId)
 
-  if (error) return { error: 'Error al eliminar el servicio. Inténtalo de nuevo.' }
+  if (error) {
+    console.error('[deleteService]', error.code, error.message)
+    return { error: 'Error al eliminar el servicio. Inténtalo de nuevo.' }
+  }
 
   revalidatePath('/dashboard/services')
 }

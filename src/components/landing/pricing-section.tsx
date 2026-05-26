@@ -4,7 +4,17 @@ import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 
-const plans = [
+type PlanFeature = string | { text: string; soon: true }
+
+const plans: {
+  name: string
+  description: string
+  price: { monthly: number; annual: number }
+  features: PlanFeature[]
+  cta: string
+  href: string
+  popular: boolean
+}[] = [
   {
     name: "Gratuito",
     description: "Para autónomos que empiezan",
@@ -28,11 +38,11 @@ const plans = [
       "Hasta 3 profesionales",
       "Reservas ilimitadas",
       "Recordatorios por email",
-      "Integración calendario",
+      { text: "Integración calendario", soon: true },
       "Estadísticas avanzadas",
       "Sin marca Zitly",
     ],
-    cta: "Probar 14 días gratis",
+    cta: "Empieza gratis",
     href: "/auth/register",
     popular: true,
   },
@@ -43,8 +53,8 @@ const plans = [
     features: [
       "Todo en Profesional",
       "Profesionales ilimitados",
-      "Multi-ubicacion",
-      "Gestion de turnos",
+      { text: "Multi-ubicación", soon: true },
+      { text: "Gestión de turnos", soon: true },
       "Soporte prioritario",
       "Onboarding dedicado",
     ],
@@ -85,13 +95,15 @@ export function PricingSection() {
             role="switch"
             aria-checked={isAnnual}
             aria-label="Cambiar a facturación anual"
-            className="relative w-14 h-7 bg-foreground/10 rounded-full p-1 transition-colors hover:bg-foreground/20"
+            className="group relative flex items-center justify-center w-14 h-11"
           >
-            <div
-              className={`w-5 h-5 bg-primary rounded-full transition-transform duration-300 ${
-                isAnnual ? "translate-x-7" : "translate-x-0"
-              }`}
-            />
+            <div className="relative w-14 h-7 bg-foreground/10 rounded-full p-1 transition-colors group-hover:bg-foreground/20">
+              <div
+                className={`w-5 h-5 bg-primary rounded-full transition-transform duration-300 ${
+                  isAnnual ? "translate-x-7" : "translate-x-0"
+                }`}
+              />
+            </div>
           </button>
           <span className={`text-sm transition-colors ${isAnnual ? "text-foreground" : "text-muted-foreground"}`}>
             Anual
@@ -139,12 +151,23 @@ export function PricingSection() {
 
               {/* Features */}
               <ul className="space-y-4 mb-10">
-                {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-3">
-                    <Check className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                    <span className="text-sm text-muted-foreground">{feature}</span>
-                  </li>
-                ))}
+                {plan.features.map((feature) => {
+                  const text = typeof feature === 'string' ? feature : feature.text
+                  const soon = typeof feature !== 'string' && feature.soon
+                  return (
+                    <li key={text} className="flex items-start gap-3">
+                      <Check className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                      <span className="text-sm text-muted-foreground flex items-center gap-2 flex-wrap">
+                        {text}
+                        {soon && (
+                          <span className="text-xs font-mono bg-foreground/5 text-muted-foreground/60 px-1.5 py-0.5 rounded border border-foreground/10">
+                            próximamente
+                          </span>
+                        )}
+                      </span>
+                    </li>
+                  )
+                })}
               </ul>
 
               {/* CTA */}

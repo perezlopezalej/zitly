@@ -129,6 +129,7 @@ export async function createBookingAction(
     .insert({
       business_id: input.businessId,
       service_id: input.serviceId,
+      service_name: (service as { id: string; name: string }).name,
       employee_id: input.employeeId,
       date: input.date,
       time: input.time,

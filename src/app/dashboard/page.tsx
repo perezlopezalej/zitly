@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { getBusiness } from '@/lib/actions'
 import { todayISO, monthRange } from '@/lib/format'
 import type { Booking } from '@/types'
+import { BookingLinkCard } from './BookingLinkCard'
 
 export default async function DashboardPage() {
   const { supabase, businessId, businessName } = await getBusiness()
@@ -14,6 +15,7 @@ export default async function DashboardPage() {
     { count: pendingCount },
     { count: monthCount },
     { data: upcomingRaw },
+    { count: servicesCount },
   ] = await Promise.all([
     supabase
       .from('bookings')
@@ -35,15 +37,19 @@ export default async function DashboardPage() {
       .neq('status', 'cancelled'),
     supabase
       .from('bookings')
-      .select('id, time, client_name, services(name)')
+      .select('id, time, client_name, service_name, services(name)')
       .eq('business_id', businessId)
       .eq('date', today)
       .neq('status', 'cancelled')
       .order('time', { ascending: true })
       .limit(3),
+    supabase
+      .from('services')
+      .select('*', { count: 'exact', head: true })
+      .eq('business_id', businessId),
   ])
 
-  const upcoming = (upcomingRaw ?? []) as unknown as Pick<Booking, 'id' | 'time' | 'client_name' | 'services'>[]
+  const upcoming = (upcomingRaw ?? []) as unknown as Pick<Booking, 'id' | 'time' | 'client_name' | 'service_name' | 'services'>[]
 
   return (
     <div>
@@ -56,6 +62,43 @@ export default async function DashboardPage() {
           Aquí tienes el resumen de hoy
         </p>
       </div>
+
+      {/* Booking link */}
+      <BookingLinkCard businessId={businessId} />
+
+      {/* Onboarding steps — only while no services */}
+      {(servicesCount ?? 0) === 0 && (
+        <div className="mb-8 rounded-xl border border-brand-green/30 bg-brand-green-subtle p-6">
+          <p className="text-sm font-semibold text-brand-green mb-4">
+            3 pasos para empezar
+          </p>
+          <ol className="space-y-4">
+            <li className="flex items-start gap-3 text-sm text-brand-ink">
+              <span className="shrink-0 w-6 h-6 rounded-full bg-brand-green text-white text-xs flex items-center justify-center font-semibold">
+                1
+              </span>
+              <span>
+                <Link href="/dashboard/services" className="font-medium hover:underline text-brand-green">
+                  Añade tu primer servicio
+                </Link>{' '}
+                para que tus clientes puedan reservarlo.
+              </span>
+            </li>
+            <li className="flex items-start gap-3 text-sm text-brand-muted">
+              <span className="shrink-0 w-6 h-6 rounded-full bg-gray-200 text-gray-500 text-xs flex items-center justify-center font-semibold">
+                2
+              </span>
+              <span>Copia tu enlace de arriba y compártelo con tus clientes.</span>
+            </li>
+            <li className="flex items-start gap-3 text-sm text-brand-muted">
+              <span className="shrink-0 w-6 h-6 rounded-full bg-gray-200 text-gray-500 text-xs flex items-center justify-center font-semibold">
+                3
+              </span>
+              <span>Recibe y confirma tu primera reserva.</span>
+            </li>
+          </ol>
+        </div>
+      )}
 
       {/* Stat cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
@@ -111,7 +154,7 @@ export default async function DashboardPage() {
                     {b.client_name ?? '—'}
                   </p>
                   <p className="text-xs text-brand-muted truncate">
-                    {b.services?.name ?? '—'}
+                    {b.service_name ?? b.services?.name ?? '—'}
                   </p>
                 </div>
               </div>

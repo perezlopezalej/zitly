@@ -108,6 +108,9 @@ export async function loginAction(
     ) {
       return { error: 'Email o contraseña incorrectos' }
     }
+    if (error.message.includes('Email not confirmed')) {
+      return { error: 'Confirma tu email antes de iniciar sesión. Revisa tu bandeja de entrada.' }
+    }
     // H2: never expose raw Supabase error messages to the client
     return { error: 'Error al iniciar sesión. Inténtalo de nuevo.' }
   }
