@@ -1,15 +1,19 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useState } from 'react'
 import Link from 'next/link'
+import { Turnstile } from '@marsidev/react-turnstile'
 import { resetPasswordAction, type AuthState } from '@/app/actions/auth'
 import { ErrorAlert } from '@/components/ErrorAlert'
+
+const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ''
 
 export default function ResetPasswordForm() {
   const [state, action, pending] = useActionState<AuthState, FormData>(
     resetPasswordAction,
     undefined,
   )
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
 
   if (state?.success) {
     return (
@@ -27,6 +31,7 @@ export default function ResetPasswordForm() {
 
   return (
     <form action={action} className="space-y-5">
+      <input type="hidden" name="captchaToken" value={captchaToken ?? ''} />
       {state?.error && <ErrorAlert message={state.error} />}
 
       <div>
@@ -47,9 +52,16 @@ export default function ResetPasswordForm() {
         />
       </div>
 
+      <Turnstile
+        siteKey={SITE_KEY}
+        onSuccess={setCaptchaToken}
+        onExpire={() => setCaptchaToken(null)}
+        options={{ theme: 'light' }}
+      />
+
       <button
         type="submit"
-        disabled={pending}
+        disabled={pending || !captchaToken}
         className="w-full py-2.5 px-4 rounded-lg text-sm font-medium text-white bg-brand-green hover:bg-brand-green-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-green disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {pending ? 'Enviando…' : 'Enviar enlace de recuperación'}

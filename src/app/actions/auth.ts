@@ -145,11 +145,13 @@ export async function resetPasswordAction(
     return { error: 'El email es obligatorio' }
   }
 
+  const captchaToken = formData.get('captchaToken') as string | null
   const supabase = await createSupabaseServerClient()
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 
   const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${appUrl}/auth/reset-password/update`,
+    ...(captchaToken ? { captchaToken } : {}),
   })
 
   if (resetError) {
