@@ -54,17 +54,17 @@ export async function registerAction(
     return { error: 'Error al crear la cuenta. Inténtalo de nuevo.' }
   }
 
-  if (!data.user) {
-    return { error: 'No se pudo crear la cuenta. Inténtalo de nuevo.' }
-  }
-
-  // Requires email confirmation to be disabled in Supabase for the session
-  // to be available immediately after signup.
+  // When email confirmation is required, Supabase returns session: null (and
+  // possibly user: null). Check session first so the user sees the correct message.
   if (!data.session) {
     return {
       error:
         'Revisa tu bandeja de entrada y confirma tu email para continuar.',
     }
+  }
+
+  if (!data.user) {
+    return { error: 'No se pudo crear la cuenta. Inténtalo de nuevo.' }
   }
 
   const { error: businessError } = await supabase
