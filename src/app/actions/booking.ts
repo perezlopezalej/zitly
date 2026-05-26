@@ -69,13 +69,13 @@ export async function createBookingAction(
   // Fetch business early to get configurable hours (also used for email later)
   const { data: businessData } = await supabase
     .from('businesses')
-    .select('name, opening_time, closing_time')
+    .select('name, opening_time, closing_time, phone, contact_email')
     .eq('id', input.businessId)
     .single()
 
   if (!businessData) return { error: 'Negocio no válido' }
 
-  const biz = businessData as { name: string; opening_time: string | null; closing_time: string | null }
+  const biz = businessData as { name: string; opening_time: string | null; closing_time: string | null; phone: string | null; contact_email: string | null }
   const { start: hoursStart, end: hoursEnd } = parseBookingHours(biz.opening_time, biz.closing_time)
 
   const [h, m] = input.time.split(':').map(Number)
@@ -136,6 +136,25 @@ export async function createBookingAction(
     employeeName = (employee as { id: string; name: string }).name
   }
 
+  let conflictQuery = supabase
+    .from('bookings')
+    .select('*', { count: 'exact', head: true })
+    .eq('business_id', input.businessId)
+    .eq('date', input.date)
+    .eq('time', input.time)
+    .neq('status', 'cancelled')
+
+  if (input.employeeId) {
+    conflictQuery = conflictQuery.eq('employee_id', input.employeeId)
+  } else {
+    conflictQuery = conflictQuery.is('employee_id', null)
+  }
+
+  const { count: conflictCount } = await conflictQuery
+  if ((conflictCount ?? 0) > 0) {
+    return { error: 'Este horario ya no está disponible. Por favor elige otro.' }
+  }
+
   const { data, error } = await supabase
     .from('bookings')
     .insert({
@@ -162,6 +181,8 @@ export async function createBookingAction(
     date: input.date,
     time: input.time,
     employeeName,
+    businessPhone: biz.phone,
+    businessContactEmail: biz.contact_email,
   }).catch(() => {})
 
   return { booking: data as CreatedBooking }

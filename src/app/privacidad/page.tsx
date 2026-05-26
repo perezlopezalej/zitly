@@ -118,6 +118,9 @@ export default function PrivacidadPage() {
               <Li>
                 <strong className="text-foreground font-medium">Vercel Inc.</strong> — alojamiento de la aplicación, acogida al EU-US Data Privacy Framework.
               </Li>
+              <Li>
+                <strong className="text-foreground font-medium">Resend Inc.</strong> — envío de emails transaccionales (confirmaciones de reserva y bienvenida).
+              </Li>
             </ul>
           </Section>
 
