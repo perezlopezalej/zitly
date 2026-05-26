@@ -4,7 +4,7 @@ import { createSupabaseServerClient } from '@/lib/supabase'
 import { redirect } from 'next/navigation'
 import { sendWelcomeEmail } from '@/lib/email'
 
-export type AuthState = { error?: string } | undefined
+export type AuthState = { error?: string; success?: string } | undefined
 
 export async function registerAction(
   state: AuthState,
@@ -133,4 +133,64 @@ export async function logoutAction() {
   const supabase = await createSupabaseServerClient()
   await supabase.auth.signOut()
   redirect('/')
+}
+
+export async function resetPasswordAction(
+  state: AuthState,
+  formData: FormData,
+): Promise<AuthState> {
+  const email = formData.get('email') as string
+
+  if (!email) {
+    return { error: 'El email es obligatorio' }
+  }
+
+  const supabase = await createSupabaseServerClient()
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+
+  await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${appUrl}/auth/reset-password/update`,
+  })
+
+  // Always show success to prevent email enumeration
+  return {
+    success:
+      'Si este email está registrado, recibirás un enlace en tu bandeja de entrada.',
+  }
+}
+
+export async function updatePasswordAction(
+  state: AuthState,
+  formData: FormData,
+): Promise<AuthState> {
+  const code = formData.get('code') as string
+  const password = formData.get('password') as string
+
+  if (!code || !password) {
+    return { error: 'Datos incompletos. Usa el enlace del email.' }
+  }
+
+  if (password.length < 8) {
+    return { error: 'La contraseña debe tener al menos 8 caracteres' }
+  }
+  if (!/[A-Z]/.test(password)) {
+    return { error: 'La contraseña debe contener al menos una letra mayúscula' }
+  }
+  if (!/[0-9]/.test(password)) {
+    return { error: 'La contraseña debe contener al menos un número' }
+  }
+
+  const supabase = await createSupabaseServerClient()
+
+  const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+  if (exchangeError) {
+    return { error: 'El enlace ha expirado o ya fue usado. Solicita uno nuevo.' }
+  }
+
+  const { error: updateError } = await supabase.auth.updateUser({ password })
+  if (updateError) {
+    return { error: 'Error al actualizar la contraseña. Inténtalo de nuevo.' }
+  }
+
+  redirect('/dashboard')
 }
