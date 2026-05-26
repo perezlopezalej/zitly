@@ -35,6 +35,7 @@ export async function registerAction(
 
   const supabase = await createSupabaseServerClient()
 
+  const captchaToken = formData.get('captchaToken') as string | null
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 
   const { data, error } = await supabase.auth.signUp({
@@ -43,6 +44,7 @@ export async function registerAction(
     options: {
       data: { full_name: businessName.trim() },
       emailRedirectTo: `${appUrl}/auth/callback`,
+      ...(captchaToken ? { captchaToken } : {}),
     },
   })
 
@@ -101,9 +103,14 @@ export async function loginAction(
     return { error: 'Email y contraseña son obligatorios' }
   }
 
+  const captchaToken = formData.get('captchaToken') as string | null
   const supabase = await createSupabaseServerClient()
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+    ...(captchaToken ? { options: { captchaToken } } : {}),
+  })
 
   if (error) {
     if (
