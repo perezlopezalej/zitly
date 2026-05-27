@@ -116,7 +116,7 @@ USING (auth.role() = 'authenticated')
 
 `createBookingAction` must be atomic. Never check slot availability and then
 insert in two separate queries — race condition allows two users to book the same slot.
-The DB enforces a `UNIQUE` constraint on `(employee_id, start_time)` — handle
+The DB enforces a `UNIQUE` constraint on `(employee_id, date, time)` — handle
 the conflict error explicitly, never silently ignore it.
 
 ## Tests

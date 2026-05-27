@@ -50,7 +50,7 @@ Any table storing bookings MUST have:
 ```sql
 ALTER TABLE public.bookings
   ADD CONSTRAINT unique_employee_slot
-  UNIQUE (employee_id, start_time);
+  UNIQUE (employee_id, date, time);
 ```
 
 Handle the `23505` error explicitly in the Server Action — never silently ignore it.
