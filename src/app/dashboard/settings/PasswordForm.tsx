@@ -1,7 +1,8 @@
 'use client'
 
 import { useActionState } from 'react'
-import { changePasswordAction, type AuthState } from '@/app/actions/auth'
+import { changePasswordAction } from '@/app/actions/auth'
+import type { AuthState } from '@/types'
 import { ErrorAlert } from '@/components/ErrorAlert'
 
 const inputClass =

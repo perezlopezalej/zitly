@@ -1,7 +1,8 @@
 'use client'
 
 import { useActionState } from 'react'
-import { updateScheduleAction, type SettingsState } from '@/app/actions/business'
+import { updateScheduleAction } from '@/app/actions/business'
+import type { SettingsState } from '@/types'
 import { ErrorAlert } from '@/components/ErrorAlert'
 
 const TIME_OPTIONS: string[] = []

@@ -1,7 +1,8 @@
 'use client'
 
 import { useActionState } from 'react'
-import { updateBusinessAction, type SettingsState } from '@/app/actions/business'
+import { updateBusinessAction } from '@/app/actions/business'
+import type { SettingsState } from '@/types'
 import { ErrorAlert } from '@/components/ErrorAlert'
 
 const CATEGORIES = [

@@ -3,8 +3,7 @@
 import { getBusiness } from '@/lib/actions'
 import { revalidatePath } from 'next/cache'
 import { isRedirectError } from 'next/dist/client/components/redirect-error'
-
-export type SettingsState = { error?: string; success?: string } | undefined
+import type { SettingsState } from '@/types'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const TIME_RE  = /^([01]\d|2[0-3]):[0-5]\d$/

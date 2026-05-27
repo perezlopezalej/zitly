@@ -60,7 +60,7 @@ export async function updateEmployeeAction(formData: FormData): Promise<ActionRe
 
 export async function deleteEmployeeAction(formData: FormData): Promise<ActionResult> {
   const id = (formData.get('id') as string)?.trim()
-  if (!id || !UUID_RE.test(id)) return
+  if (!id || !UUID_RE.test(id)) return { error: 'ID de empleado no válido' }
 
   let supabase, businessId
   try {
