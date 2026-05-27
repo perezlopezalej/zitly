@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 vi.mock("@/lib/supabase", () => ({
-  createSupabaseServerClient: vi.fn(),
+  createSupabaseAdminClient: vi.fn(),
 }));
 
 vi.mock("@/lib/actions", () => ({
@@ -12,7 +12,7 @@ vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
 }));
 
-import { createSupabaseServerClient } from "@/lib/supabase";
+import { createSupabaseAdminClient } from "@/lib/supabase";
 import { createBookingAction, type CreateBookingInput } from "../booking";
 
 const TODAY = "2026-05-22";
@@ -31,8 +31,13 @@ function buildMocks() {
   const mockQueryChain = {
     select: vi.fn().mockReturnThis(),
     eq: vi.fn().mockReturnThis(),
+    neq: vi.fn().mockReturnThis(),
+    is: vi.fn().mockReturnThis(),
     gte: vi.fn().mockResolvedValue({ count: 0 }),
-    single: vi.fn().mockResolvedValue({ data: { id: "svc-1" }, error: null }),
+    single: vi.fn().mockResolvedValue({
+      data: { id: "svc-1", name: "Corte de pelo" },
+      error: null,
+    }),
     insert: vi.fn().mockReturnValue(mockInsertChain),
   };
 
@@ -47,9 +52,8 @@ beforeEach(() => {
   vi.useFakeTimers();
   vi.setSystemTime(new Date(TODAY));
   const { mockSupabase } = buildMocks();
-  vi.mocked(createSupabaseServerClient).mockResolvedValue(
-    mockSupabase as never,
-  );
+  // createSupabaseAdminClient es síncrono — mockReturnValue, no mockResolvedValue
+  vi.mocked(createSupabaseAdminClient).mockReturnValue(mockSupabase as never);
 });
 
 afterEach(() => {
@@ -58,12 +62,12 @@ afterEach(() => {
 });
 
 const VALID_INPUT: CreateBookingInput = {
-  businessId: "biz-1",
-  serviceId: "svc-1",
+  businessId: "00000000-0000-0000-0000-000000000001",
+  serviceId:  "00000000-0000-0000-0000-000000000002",
   employeeId: null,
-  date: "2026-06-01",
-  time: "10:00",
-  clientName: "Ana García",
+  date:        "2026-06-01",
+  time:        "10:00",
+  clientName:  "Ana García",
   clientEmail: "ana@example.com",
 };
 
@@ -184,10 +188,10 @@ describe("createBookingAction — client name validation", () => {
 // ─── Double booking prevention ───────────────────────────────────────────────
 
 describe("createBookingAction — double booking prevention", () => {
-  it("returns error when UNIQUE constraint is violated", async () => {
+  it("returns a slot-unavailable error when UNIQUE constraint is violated", async () => {
     const { mockQueryChain, mockSupabase } = buildMocks();
 
-    // Simula el error que lanza Supabase cuando viola el UNIQUE constraint
+    // Simula el error 23505 que lanza Supabase al violar el UNIQUE constraint
     mockQueryChain.insert.mockReturnValue({
       select: vi.fn().mockReturnThis(),
       single: vi.fn().mockResolvedValue({
@@ -199,13 +203,14 @@ describe("createBookingAction — double booking prevention", () => {
       }),
     });
 
-    vi.mocked(createSupabaseServerClient).mockResolvedValue(
-      mockSupabase as never,
-    );
+    vi.mocked(createSupabaseAdminClient).mockReturnValue(mockSupabase as never);
 
     const result = await createBookingAction(VALID_INPUT);
-    expect(result?.error).toBeTruthy();
-    // El error debe ser un mensaje genérico en español, nunca el error de DB
+
+    // El error debe ser explícito sobre la disponibilidad, en español, nunca el error de DB
+    expect(result?.error).toBe(
+      "Este horario ya no está disponible. Por favor elige otro.",
+    );
     expect(result?.error).not.toMatch(/duplicate|unique|constraint/i);
   });
 });
