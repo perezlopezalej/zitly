@@ -19,11 +19,10 @@ type Business = {
 
 type Step = 'service' | 'employee' | 'datetime' | 'details' | 'confirmed'
 
-function generateTimeSlots(durationMinutes: number, startHour: number, endHour: number): string[] {
+// startMinutes / endMinutes: total minutes from midnight (from parseBookingHours)
+function generateTimeSlots(durationMinutes: number, startMinutes: number, endMinutes: number): string[] {
   const slots: string[] = []
-  const start = startHour * 60
-  const end = endHour * 60
-  for (let m = start; m + durationMinutes <= end; m += BOOKING_SLOT_INTERVAL) {
+  for (let m = startMinutes; m + durationMinutes <= endMinutes; m += BOOKING_SLOT_INTERVAL) {
     const h = Math.floor(m / 60)
     const min = m % 60
     slots.push(
@@ -81,12 +80,13 @@ export default function BookingFlow({ business, services, employees }: Props) {
   const [booking, setBooking] = useState<CreatedBooking | null>(null)
   const [isPending, startTransition] = useTransition()
 
-  const { start: hoursStart, end: hoursEnd } = parseBookingHours(
+  // parseBookingHours returns total minutes from midnight
+  const { start: startMinutes, end: endMinutes } = parseBookingHours(
     business.opening_time,
     business.closing_time,
   )
   const timeSlots = selectedService
-    ? generateTimeSlots(selectedService.duration_minutes, hoursStart, hoursEnd)
+    ? generateTimeSlots(selectedService.duration_minutes, startMinutes, endMinutes)
     : []
 
   const currentStep = stepNumber(step, hasEmployees)

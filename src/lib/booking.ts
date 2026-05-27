@@ -5,12 +5,17 @@ export const BOOKING_HOURS_END   = 18  // 18:00 (exclusive upper bound)
 
 export const BOOKING_SLOT_INTERVAL = 30 // minutes between available slots
 
+/** Returns business open/close as total minutes from midnight (e.g. "09:30" → 570). */
 export function parseBookingHours(
   opening_time?: string | null,
   closing_time?: string | null,
 ): { start: number; end: number } {
-  const start = opening_time ? parseInt(opening_time.split(':')[0], 10) : BOOKING_HOURS_START
-  const end   = closing_time ? parseInt(closing_time.split(':')[0], 10) : BOOKING_HOURS_END
+  const toMinutes = (t: string) => {
+    const [h, m] = t.split(':').map(Number)
+    return h * 60 + (m ?? 0)
+  }
+  const start = opening_time ? toMinutes(opening_time) : BOOKING_HOURS_START * 60
+  const end   = closing_time ? toMinutes(closing_time) : BOOKING_HOURS_END * 60
   return { start, end }
 }
 
