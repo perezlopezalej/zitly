@@ -1,15 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 export function BookingLinkCard({ businessId }: { businessId: string }) {
-  const [baseUrl, setBaseUrl] = useState(process.env.NEXT_PUBLIC_APP_URL ?? '')
-
-  useEffect(() => {
-    if (!process.env.NEXT_PUBLIC_APP_URL) {
-      setBaseUrl(window.location.origin)
-    }
-  }, [])
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL ??
+    (typeof window !== 'undefined' ? window.location.origin : '')
 
   const url = `${baseUrl}/book/${businessId}`
   const [copied, setCopied] = useState(false)
@@ -34,6 +30,7 @@ export function BookingLinkCard({ businessId }: { businessId: string }) {
           href={url}
           target="_blank"
           rel="noreferrer"
+          suppressHydrationWarning
           className="text-sm text-brand-ink font-mono truncate flex-1 bg-brand-cream rounded-lg px-3 py-2 min-w-0 hover:underline"
         >
           {url}

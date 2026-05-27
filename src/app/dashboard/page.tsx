@@ -58,7 +58,8 @@ export default async function DashboardPage() {
   ])
 
   const monthRevenue = (revenueRaw ?? []).reduce((sum, b) => {
-    const price = (b.services as { price: number } | null)?.price ?? 0
+    const svc = b.services as unknown as { price: number } | { price: number }[] | null
+    const price = Array.isArray(svc) ? (svc[0]?.price ?? 0) : (svc?.price ?? 0)
     return sum + price
   }, 0)
 
