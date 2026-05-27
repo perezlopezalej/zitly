@@ -7,6 +7,8 @@ import { isRedirectError } from 'next/dist/client/components/redirect-error'
 import { countActiveBookings } from '@/lib/booking'
 import type { ActionResult } from '@/types'
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 export async function createEmployeeAction(formData: FormData): Promise<ActionResult> {
   const name = (formData.get('name') as string)?.trim()
 
@@ -34,7 +36,7 @@ export async function updateEmployeeAction(formData: FormData): Promise<ActionRe
   const id = (formData.get('id') as string)?.trim()
   const name = (formData.get('name') as string)?.trim()
 
-  if (!id) return { error: 'ID de empleado no válido' }
+  if (!id || !UUID_RE.test(id)) return { error: 'ID de empleado no válido' }
   if (!name || !validateLength(name, 1, 100)) return { error: 'El nombre debe tener entre 1 y 100 caracteres' }
 
   let supabase, businessId
@@ -58,7 +60,7 @@ export async function updateEmployeeAction(formData: FormData): Promise<ActionRe
 
 export async function deleteEmployeeAction(formData: FormData): Promise<ActionResult> {
   const id = (formData.get('id') as string)?.trim()
-  if (!id) return
+  if (!id || !UUID_RE.test(id)) return
 
   let supabase, businessId
   try {

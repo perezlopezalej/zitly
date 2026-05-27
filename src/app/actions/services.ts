@@ -7,6 +7,8 @@ import { isRedirectError } from 'next/dist/client/components/redirect-error'
 import { countActiveBookings } from '@/lib/booking'
 import type { ActionResult } from '@/types'
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 function validateServiceFields(formData: FormData): { error: string } | {
   name: string
   description: string | null
@@ -61,7 +63,7 @@ export async function updateServiceAction(formData: FormData): Promise<ActionRes
   if ('error' in validated) return validated
 
   const id = (formData.get('id') as string)?.trim()
-  if (!id) return { error: 'ID de servicio no válido' }
+  if (!id || !UUID_RE.test(id)) return { error: 'ID de servicio no válido' }
 
   let supabase, businessId
   try {
@@ -83,6 +85,8 @@ export async function updateServiceAction(formData: FormData): Promise<ActionRes
 }
 
 export async function deleteServiceAction(id: string): Promise<ActionResult> {
+  if (!UUID_RE.test(id)) return { error: 'ID de servicio no válido' }
+
   let supabase, businessId
   try {
     ;({ supabase, businessId } = await getBusiness())
