@@ -1,7 +1,8 @@
 'use client'
 
 import { useActionState } from 'react'
-import { updatePasswordAction, type AuthState } from '@/app/actions/auth'
+import { updatePasswordAction } from '@/app/actions/auth'
+import type { AuthState } from '@/types'
 import { ErrorAlert } from '@/components/ErrorAlert'
 
 export default function UpdatePasswordForm({ code }: { code: string }) {

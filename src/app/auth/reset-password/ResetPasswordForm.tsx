@@ -3,7 +3,8 @@
 import { useActionState, useState } from 'react'
 import Link from 'next/link'
 import { Turnstile } from '@marsidev/react-turnstile'
-import { resetPasswordAction, type AuthState } from '@/app/actions/auth'
+import { resetPasswordAction } from '@/app/actions/auth'
+import type { AuthState } from '@/types'
 import { ErrorAlert } from '@/components/ErrorAlert'
 
 const SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ''

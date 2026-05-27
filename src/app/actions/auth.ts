@@ -3,8 +3,8 @@
 import { createSupabaseServerClient } from '@/lib/supabase'
 import { redirect } from 'next/navigation'
 import { sendWelcomeEmail } from '@/lib/email'
-
-export type AuthState = { error?: string; success?: string } | undefined
+import { isRedirectError } from 'next/dist/client/components/redirect-error'
+import type { AuthState } from '@/types'
 
 export async function registerAction(
   state: AuthState,
@@ -33,7 +33,13 @@ export async function registerAction(
     return { error: 'El nombre del negocio debe tener entre 2 y 100 caracteres' }
   }
 
-  const supabase = await createSupabaseServerClient()
+  let supabase
+  try {
+    supabase = await createSupabaseServerClient()
+  } catch (e) {
+    if (isRedirectError(e)) throw e
+    return { error: 'Error al crear la cuenta. Inténtalo de nuevo.' }
+  }
 
   const captchaToken = formData.get('captchaToken') as string | null
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
@@ -104,7 +110,14 @@ export async function loginAction(
   }
 
   const captchaToken = formData.get('captchaToken') as string | null
-  const supabase = await createSupabaseServerClient()
+
+  let supabase
+  try {
+    supabase = await createSupabaseServerClient()
+  } catch (e) {
+    if (isRedirectError(e)) throw e
+    return { error: 'Error al iniciar sesión. Inténtalo de nuevo.' }
+  }
 
   const { error } = await supabase.auth.signInWithPassword({
     email,
@@ -159,7 +172,14 @@ export async function changePasswordAction(
     return { error: 'La contraseña debe contener al menos un número' }
   }
 
-  const supabase = await createSupabaseServerClient()
+  let supabase
+  try {
+    supabase = await createSupabaseServerClient()
+  } catch (e) {
+    if (isRedirectError(e)) throw e
+    return { error: 'Error de conexión. Inténtalo de nuevo.' }
+  }
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user?.email) redirect('/auth/login')
 
@@ -190,7 +210,18 @@ export async function resetPasswordAction(
   }
 
   const captchaToken = formData.get('captchaToken') as string | null
-  const supabase = await createSupabaseServerClient()
+
+  let supabase
+  try {
+    supabase = await createSupabaseServerClient()
+  } catch (e) {
+    if (isRedirectError(e)) throw e
+    // Always return success to prevent email enumeration, even on client creation failure
+    return {
+      success: 'Si este email está registrado, recibirás un enlace en tu bandeja de entrada.',
+    }
+  }
+
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
 
   const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
@@ -230,7 +261,13 @@ export async function updatePasswordAction(
     return { error: 'La contraseña debe contener al menos un número' }
   }
 
-  const supabase = await createSupabaseServerClient()
+  let supabase
+  try {
+    supabase = await createSupabaseServerClient()
+  } catch (e) {
+    if (isRedirectError(e)) throw e
+    return { error: 'Error de conexión. Inténtalo de nuevo.' }
+  }
 
   const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
   if (exchangeError) {
