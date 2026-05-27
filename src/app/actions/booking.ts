@@ -9,24 +9,9 @@ import { sendBookingConfirmationEmail } from '@/lib/email'
 import { BOOKING_SLOT_INTERVAL, ALLOWED_STATUS_TRANSITIONS, parseBookingHours } from '@/lib/booking'
 import type { AllowedStatus } from '@/lib/booking'
 import { isRedirectError } from 'next/dist/client/components/redirect-error'
+import type { CreateBookingInput, CreatedBooking, CreateBookingResult, BusinessContact, Service, Employee } from '@/types'
 
 // ─── Create booking (public — no auth required) ──────────────────────────────
-
-export type CreateBookingInput = {
-  businessId: string
-  serviceId: string
-  employeeId: string | null
-  date: string
-  time: string
-  clientName: string
-  clientEmail: string
-}
-
-export type CreatedBooking = { id: string; date: string; time: string }
-
-export type CreateBookingResult =
-  | { booking: CreatedBooking; error?: never }
-  | { error: string; booking?: never }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const TIME_RE  = /^([01]\d|2[0-3]):[0-5]\d$/
@@ -75,7 +60,7 @@ export async function createBookingAction(
 
   if (!businessData) return { error: 'Negocio no válido' }
 
-  const biz = businessData as { name: string; opening_time: string | null; closing_time: string | null; phone: string | null; contact_email: string | null }
+  const biz = businessData as BusinessContact
   // parseBookingHours returns total minutes from midnight
   const { start: startMinutes, end: endMinutes } = parseBookingHours(biz.opening_time, biz.closing_time)
 
@@ -136,7 +121,7 @@ export async function createBookingAction(
       .single()
 
     if (!employee) return { error: 'Empleado no válido para este negocio' }
-    employeeName = (employee as { id: string; name: string }).name
+    employeeName = (employee as Employee).name
   }
 
   let conflictQuery = supabase
@@ -163,7 +148,7 @@ export async function createBookingAction(
     .insert({
       business_id: input.businessId,
       service_id: input.serviceId,
-      service_name: (service as { id: string; name: string }).name,
+      service_name: (service as Service).name,
       employee_id: input.employeeId,
       date: input.date,
       time: input.time,
@@ -185,7 +170,7 @@ export async function createBookingAction(
   void sendBookingConfirmationEmail(input.clientEmail, {
     clientName: input.clientName,
     businessName: biz.name,
-    serviceName: (service as { id: string; name: string }).name,
+    serviceName: (service as Service).name,
     date: input.date,
     time: input.time,
     employeeName,
