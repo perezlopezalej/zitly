@@ -76,15 +76,18 @@ export async function createBookingAction(
   if (!businessData) return { error: 'Negocio no válido' }
 
   const biz = businessData as { name: string; opening_time: string | null; closing_time: string | null; phone: string | null; contact_email: string | null }
-  const { start: hoursStart, end: hoursEnd } = parseBookingHours(biz.opening_time, biz.closing_time)
+  // parseBookingHours returns total minutes from midnight
+  const { start: startMinutes, end: endMinutes } = parseBookingHours(biz.opening_time, biz.closing_time)
 
   const [h, m] = input.time.split(':').map(Number)
   const totalMinutes = h * 60 + m
-  if (totalMinutes < hoursStart * 60 || totalMinutes >= hoursEnd * 60) {
-    const lastSlotH = Math.floor((hoursEnd * 60 - BOOKING_SLOT_INTERVAL) / 60)
-    const lastSlotM = (hoursEnd * 60 - BOOKING_SLOT_INTERVAL) % 60
-    const lastSlot = `${String(lastSlotH).padStart(2, '0')}:${String(lastSlotM).padStart(2, '0')}`
-    const openStr = `${String(hoursStart).padStart(2, '0')}:00`
+  if (totalMinutes < startMinutes || totalMinutes >= endMinutes) {
+    const lastSlotH = Math.floor((endMinutes - BOOKING_SLOT_INTERVAL) / 60)
+    const lastSlotM = (endMinutes - BOOKING_SLOT_INTERVAL) % 60
+    const lastSlot  = `${String(lastSlotH).padStart(2, '0')}:${String(lastSlotM).padStart(2, '0')}`
+    const openH     = Math.floor(startMinutes / 60)
+    const openM     = startMinutes % 60
+    const openStr   = `${String(openH).padStart(2, '0')}:${String(openM).padStart(2, '0')}`
     return { error: `La hora debe estar entre las ${openStr} y las ${lastSlot}` }
   }
 
@@ -172,7 +175,12 @@ export async function createBookingAction(
     .select('id, date, time')
     .single()
 
-  if (error) return { error: 'No se pudo crear la reserva. Inténtalo de nuevo.' }
+  if (error) {
+    if (error.code === '23505') {
+      return { error: 'Este horario ya no está disponible. Por favor elige otro.' }
+    }
+    return { error: 'No se pudo crear la reserva. Inténtalo de nuevo.' }
+  }
 
   void sendBookingConfirmationEmail(input.clientEmail, {
     clientName: input.clientName,
@@ -198,6 +206,7 @@ export async function updateBookingStatusAction(
   const rawStatus = formData.get('status') as string
 
   if (!bookingId || !rawStatus) return
+  if (!UUID_RE.test(bookingId)) return
 
   // Reject any status value not explicitly allowed by this action
   if (!(ALLOWED_STATUS_TRANSITIONS as readonly string[]).includes(rawStatus)) return
