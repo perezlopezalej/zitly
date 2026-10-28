@@ -6,7 +6,9 @@ Zitly es una aplicación web de reservas para pequeños negocios: cada negocio c
 
 - Aplicación desplegada en Vercel: https://zitly.vercel.app
 
-[CAPTURAS AQUÍ]
+| Página principal | Reserva como cliente | Panel del dueño |
+|---|---|---|
+| ![Página principal](docs/screenshots/inicio.png) | ![Reserva](docs/screenshots/reserva.png) | ![Panel](docs/screenshots/panel.png) |
 
 ## Funcionalidades principales
 
