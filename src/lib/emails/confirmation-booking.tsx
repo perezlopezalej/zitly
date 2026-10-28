@@ -103,10 +103,6 @@ export function BookingEmail({ clientName, businessName, serviceName, date, time
                           <a href="https://zitly.es" style={{ color: '#2C5F3F', textDecoration: 'none' }}>
                             Zitly
                           </a>
-                          . Si crees que es un error, escríbenos a{' '}
-                          <a href="mailto:soporte@zitly.app" style={{ color: '#2C5F3F', textDecoration: 'none' }}>
-                            soporte@zitly.app
-                          </a>
                           .
                         </p>
                       </td>

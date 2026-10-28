@@ -63,8 +63,8 @@ export default function PrivacidadPage() {
             </p>
             <p>
               Contacto:{' '}
-              <a href="mailto:soporte@zitly.app" className="text-primary hover:underline underline-offset-2">
-                soporte@zitly.app
+              <a href="https://github.com/perezlopezalej" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline underline-offset-2">
+                github.com/perezlopezalej
               </a>
             </p>
           </Section>
@@ -135,8 +135,8 @@ export default function PrivacidadPage() {
             </ul>
             <p className="mt-3">
               Para ejercer estos derechos, escríbenos a{' '}
-              <a href="mailto:soporte@zitly.app" className="text-primary hover:underline underline-offset-2">
-                soporte@zitly.app
+              <a href="https://github.com/perezlopezalej" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline underline-offset-2">
+                github.com/perezlopezalej
               </a>
               . También puedes presentar una reclamación ante la Agencia Española de Protección de
               Datos en{' '}

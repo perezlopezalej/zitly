@@ -90,11 +90,7 @@ export function RegisterEmail({ businessName }: RegisterEmailProps) {
                     <tr>
                       <td style={{ padding: '24px 40px 32px' }}>
                         <p style={{ margin: 0, fontSize: '12px', color: '#9CA89E', lineHeight: '1.6' }}>
-                          Si tienes alguna duda, escríbenos a{' '}
-                          <a href="mailto:soporte@zitly.app" style={{ color: '#2C5F3F', textDecoration: 'none' }}>
-                            soporte@zitly.app
-                          </a>
-                          . Respondemos en menos de 24 horas.
+                          Gracias por probar Zitly, un proyecto de demostración.
                         </p>
                       </td>
                     </tr>

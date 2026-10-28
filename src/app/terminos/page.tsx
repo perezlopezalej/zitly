@@ -143,8 +143,8 @@ export default function TerminosPage() {
           <Section title="Contacto">
             <p>
               Para cualquier consulta sobre estos términos, contacta en{' '}
-              <a href="mailto:soporte@zitly.app" className="text-primary hover:underline underline-offset-2">
-                soporte@zitly.app
+              <a href="https://github.com/perezlopezalej" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline underline-offset-2">
+                github.com/perezlopezalej
               </a>
               .
             </p>

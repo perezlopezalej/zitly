@@ -1,11 +1,10 @@
 import type { Metadata } from 'next'
 import { Navigation } from '@/components/landing/navigation'
 import { FooterSection } from '@/components/landing/footer-section'
-import ContactForm from './ContactForm'
 
 export const metadata: Metadata = {
   title: 'Contacto — Zitly',
-  description: 'Contáctanos. Somos un equipo pequeño y respondemos en menos de 24 horas.',
+  description: 'Zitly es un proyecto de demostración. Encuentra al autor en GitHub y LinkedIn.',
 }
 
 export default function ContactoPage() {
@@ -45,27 +44,24 @@ export default function ContactoPage() {
           </div>
 
           {/* Two columns */}
-          <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
+          <div className="grid gap-16 lg:gap-24">
             {/* Left: info */}
             <div>
               <p className="text-lg text-muted-foreground leading-relaxed mb-12 max-w-md">
-                Somos un equipo pequeño.<br />
-                Respondemos en menos de 24 horas.
+                Zitly es un proyecto de demostración, por lo que no hay formulario de contacto.
+                Puedes ver el código y otros proyectos en{' '}
+                <a
+                  href="https://github.com/perezlopezalej"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline underline-offset-2"
+                >
+                  GitHub
+                </a>
+                .
               </p>
 
               <div className="space-y-0">
-                <div className="border-t border-foreground/10 py-6">
-                  <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-2">
-                    Email de soporte
-                  </p>
-                  <a
-                    href="mailto:soporte@zitly.app"
-                    className="text-lg font-medium text-foreground hover:text-primary transition-colors"
-                  >
-                    soporte@zitly.app
-                  </a>
-                </div>
-
                 <div className="border-t border-foreground/10 py-6">
                   <p className="text-xs font-mono text-muted-foreground uppercase tracking-widest mb-2">
                     LinkedIn
@@ -83,11 +79,6 @@ export default function ContactoPage() {
 
                 <div className="border-t border-foreground/10" />
               </div>
-            </div>
-
-            {/* Right: form */}
-            <div>
-              <ContactForm />
             </div>
           </div>
         </div>
