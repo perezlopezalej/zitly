@@ -13,7 +13,8 @@ vi.mock("next/cache", () => ({
 }));
 
 import { createSupabaseAdminClient } from "@/lib/supabase";
-import { createBookingAction, type CreateBookingInput } from "../booking";
+import { createBookingAction } from "../booking";
+import type { CreateBookingInput } from "@/types";
 
 const TODAY = "2026-05-22";
 
