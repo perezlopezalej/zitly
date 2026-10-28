@@ -112,7 +112,10 @@ llamada sin el secreto configurado.
 
 ## Autor
 
-Alejandro Pérez López · [GitHub](https://github.com/perezlopezalej) · https://www.linkedin.com/in/alejandro-alejandro-perez-dev/
+**Alejandro Pérez López**
+
+- GitHub: [perezlopezalej](https://github.com/perezlopezalej)
+- LinkedIn: [Alejandro Pérez López](https://www.linkedin.com/in/alejandro-alejandro-perez-dev/)
 
 ## Licencia
 
