@@ -13,7 +13,8 @@ vi.mock("next/cache", () => ({
 }));
 
 import { createSupabaseAdminClient } from "@/lib/supabase";
-import { createBookingAction } from "../booking";
+import { getBusiness } from "@/lib/actions";
+import { createBookingAction, updateBookingStatusAction } from "../booking";
 import type { CreateBookingInput } from "@/types";
 
 const TODAY = "2026-05-22";
@@ -213,5 +214,110 @@ describe("createBookingAction — double booking prevention", () => {
       "Este horario ya no está disponible. Por favor elige otro.",
     );
     expect(result?.error).not.toMatch(/duplicate|unique|constraint/i);
+  });
+
+  it("returns a slot-unavailable error on 23505 when an employee is given", async () => {
+    const { mockQueryChain, mockSupabase } = buildMocks();
+    mockQueryChain.insert.mockReturnValue({
+      select: vi.fn().mockReturnThis(),
+      single: vi.fn().mockResolvedValue({
+        data: null,
+        error: { code: "23505", message: "duplicate key value" },
+      }),
+    });
+    vi.mocked(createSupabaseAdminClient).mockReturnValue(mockSupabase as never);
+
+    const result = await createBookingAction({
+      ...VALID_INPUT,
+      employeeId: "00000000-0000-0000-0000-000000000003",
+    });
+
+    expect(result?.error).toBe(
+      "Este horario ya no está disponible. Por favor elige otro.",
+    );
+  });
+
+  it("does not run a pre-insert availability query (the DB index is the arbiter)", async () => {
+    const { mockQueryChain, mockSupabase } = buildMocks();
+    vi.mocked(createSupabaseAdminClient).mockReturnValue(mockSupabase as never);
+
+    const result = await createBookingAction(VALID_INPUT);
+
+    expect(result).toHaveProperty("booking");
+    expect(mockQueryChain.neq).not.toHaveBeenCalled();
+    expect(mockQueryChain.is).not.toHaveBeenCalled();
+    expect(mockQueryChain.insert).toHaveBeenCalledTimes(1);
+  });
+});
+
+// ─── Business hours stored as TEXT ('HH:MM') ─────────────────────────────────
+
+describe("createBookingAction — hours stored as text", () => {
+  function mockBusinessHours(opening_time: string, closing_time: string) {
+    const { mockQueryChain, mockSupabase } = buildMocks();
+    mockQueryChain.single
+      .mockResolvedValueOnce({
+        data: { name: "Salón", opening_time, closing_time, phone: null, contact_email: null },
+        error: null,
+      })
+      .mockResolvedValueOnce({ data: { id: "svc-1", name: "Corte" }, error: null });
+    vi.mocked(createSupabaseAdminClient).mockReturnValue(mockSupabase as never);
+  }
+
+  it("accepts a slot inside custom '10:00'–'14:00' hours", async () => {
+    mockBusinessHours("10:00", "14:00");
+    const result = await createBookingAction({ ...VALID_INPUT, time: "13:30" });
+    expect(result).toHaveProperty("booking");
+  });
+
+  it("rejects a slot outside custom hours with the stored opening time", async () => {
+    mockBusinessHours("10:00", "14:00");
+    const result = await createBookingAction({ ...VALID_INPUT, time: "09:30" });
+    expect(result?.error).toBe("La hora debe estar entre las 10:00 y las 13:30");
+  });
+});
+
+// ─── updateBookingStatusAction ───────────────────────────────────────────────
+
+describe("updateBookingStatusAction — UNIQUE conflict", () => {
+  const BOOKING_ID = "00000000-0000-0000-0000-0000000000aa";
+
+  function formData(status: string) {
+    const fd = new FormData();
+    fd.set("bookingId", BOOKING_ID);
+    fd.set("status", status);
+    return fd;
+  }
+
+  function mockUpdateResult(error: { code: string; message: string } | null) {
+    const chain = {
+      update: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+    };
+    chain.eq
+      .mockReturnValueOnce(chain)
+      .mockResolvedValueOnce({ error });
+    const supabase = { from: vi.fn().mockReturnValue(chain) };
+    vi.mocked(getBusiness).mockResolvedValue({
+      supabase,
+      businessId: "biz-1",
+    } as never);
+  }
+
+  it("returns a Spanish slot-taken error on 23505 (reactivating a cancelled booking)", async () => {
+    mockUpdateResult({ code: "23505", message: "duplicate key value violates unique constraint" });
+
+    const result = await updateBookingStatusAction(undefined, formData("confirmed"));
+
+    expect(result).toEqual({ error: "Ese horario ya está reservado por otra persona." });
+    expect(result?.error).not.toMatch(/duplicate|unique|constraint/i);
+  });
+
+  it("returns the generic error for other DB errors", async () => {
+    mockUpdateResult({ code: "XX000", message: "boom" });
+
+    const result = await updateBookingStatusAction(undefined, formData("cancelled"));
+
+    expect(result).toEqual({ error: "Error al actualizar la reserva. Inténtalo de nuevo." });
   });
 });

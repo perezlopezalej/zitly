@@ -58,6 +58,7 @@ CREATE TRIGGER trg_booking_rate_limit
 --
 --     Verificado: los únicos SELECT anónimos sobre businesses son
 --     en /book/[businessId]/page.tsx → select('id, name, description').
+--     (Obsoleto: hoy /book también lee opening_time y closing_time; ver 009.)
 -- ────────────────────────────────────────────────────────────
 REVOKE SELECT ON businesses FROM anon;
 GRANT  SELECT (id, name, category, description) ON businesses TO anon;

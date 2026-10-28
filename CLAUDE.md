@@ -116,8 +116,11 @@ USING (auth.role() = 'authenticated')
 
 `createBookingAction` must be atomic. Never check slot availability and then
 insert in two separate queries — race condition allows two users to book the same slot.
-The DB enforces a `UNIQUE` constraint on `(employee_id, date, time)` — handle
-the conflict error explicitly, never silently ignore it.
+The DB enforces a partial unique index `uq_bookings_active_slot` on
+`(business_id, employee_id, date, time) NULLS NOT DISTINCT WHERE status <> 'cancelled'`
+(migration 008; covers bookings without employee, cancelled slots are free) — handle
+the `23505` conflict error explicitly in `createBookingAction` and
+`updateBookingStatusAction`, never silently ignore it.
 
 ## Tests
 

@@ -124,25 +124,7 @@ export async function createBookingAction(
     employeeName = (employee as Employee).name
   }
 
-  let conflictQuery = supabase
-    .from('bookings')
-    .select('*', { count: 'exact', head: true })
-    .eq('business_id', input.businessId)
-    .eq('date', input.date)
-    .eq('time', input.time)
-    .neq('status', 'cancelled')
-
-  if (input.employeeId) {
-    conflictQuery = conflictQuery.eq('employee_id', input.employeeId)
-  } else {
-    conflictQuery = conflictQuery.is('employee_id', null)
-  }
-
-  const { count: conflictCount } = await conflictQuery
-  if ((conflictCount ?? 0) > 0) {
-    return { error: 'Este horario ya no está disponible. Por favor elige otro.' }
-  }
-
+  // Atomic: the partial unique index uq_bookings_active_slot is the arbiter (23505 below).
   const { data, error } = await supabase
     .from('bookings')
     .insert({
@@ -211,7 +193,13 @@ export async function updateBookingStatusAction(
     .eq('id', bookingId)
     .eq('business_id', businessId)
 
-  if (error) return { error: 'Error al actualizar la reserva. Inténtalo de nuevo.' }
+  if (error) {
+    // Reactivating a cancelled booking whose slot was taken meanwhile
+    if (error.code === '23505') {
+      return { error: 'Ese horario ya está reservado por otra persona.' }
+    }
+    return { error: 'Error al actualizar la reserva. Inténtalo de nuevo.' }
+  }
 
   revalidatePath('/dashboard/reservations')
 }
