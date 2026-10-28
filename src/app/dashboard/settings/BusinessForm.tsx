@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useState } from 'react'
 import { updateBusinessAction } from '@/app/actions/business'
 import type { SettingsState } from '@/types'
 import { ErrorAlert } from '@/components/ErrorAlert'
@@ -35,6 +35,9 @@ export default function BusinessForm({ initialData }: Props) {
     undefined,
   )
 
+  // Controlado: React 19 resetea el form tras la action y un defaultValue vuelve a la opción inicial
+  const [category, setCategory] = useState(initialData.category ?? 'general')
+
   return (
     <form action={action} className="space-y-4">
       {state?.error   && <ErrorAlert message={state.error} />}
@@ -61,7 +64,8 @@ export default function BusinessForm({ initialData }: Props) {
         </label>
         <select
           id="category" name="category"
-          defaultValue={initialData.category ?? 'general'}
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
           className={inputClass}
         >
           {CATEGORIES.map(({ value, label }) => (

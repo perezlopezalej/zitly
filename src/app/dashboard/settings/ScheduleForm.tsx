@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useState } from 'react'
 import { updateScheduleAction } from '@/app/actions/business'
 import type { SettingsState } from '@/types'
 import { ErrorAlert } from '@/components/ErrorAlert'
@@ -38,6 +38,10 @@ export default function ScheduleForm({ initialData }: Props) {
     undefined,
   )
 
+  // Controlados: React 19 resetea el form tras la action y un defaultValue vuelve a la opción inicial
+  const [openingTime, setOpeningTime] = useState(initialData.opening_time ?? '09:00')
+  const [closingTime, setClosingTime] = useState(initialData.closing_time ?? '18:00')
+
   const defaultDays = initialData.active_days ?? [
     'monday', 'tuesday', 'wednesday', 'thursday', 'friday',
   ]
@@ -58,7 +62,8 @@ export default function ScheduleForm({ initialData }: Props) {
           </label>
           <select
             id="opening_time" name="opening_time"
-            defaultValue={initialData.opening_time ?? '09:00'}
+            value={openingTime}
+            onChange={(e) => setOpeningTime(e.target.value)}
             className={selectClass}
           >
             {TIME_OPTIONS.map((t) => (
@@ -73,7 +78,8 @@ export default function ScheduleForm({ initialData }: Props) {
           </label>
           <select
             id="closing_time" name="closing_time"
-            defaultValue={initialData.closing_time ?? '18:00'}
+            value={closingTime}
+            onChange={(e) => setClosingTime(e.target.value)}
             className={selectClass}
           >
             {TIME_OPTIONS.map((t) => (
