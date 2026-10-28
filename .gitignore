@@ -49,3 +49,6 @@ next-env.d.ts
 CLAUDE.local.md
 .claude/settings.local.json
 AUDITORIA.md
+
+# logs
+logs/
